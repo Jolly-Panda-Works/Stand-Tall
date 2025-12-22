@@ -9,6 +9,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Tower-Material2-SToon Transparent
   m_Shader: {fileID: 4800000, guid: 481153b840b6e408da95e6afbe176397, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _SEGMENTED_ON
@@ -19,6 +21,7 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
+  m_LockedProperties: _Segmented
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -60,7 +63,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AmbientCol: 0.568
+    - _AmbientCol: 0.153
     - _BumpScale: 1
     - _Clipped: 0
     - _ColBright: 0
@@ -71,10 +74,10 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0.51
     - _GlossyReflections: 1
-    - _Lumin: 0.81
+    - _Lumin: 1.249
     - _MaxLight: 1
     - _Metallic: 0
-    - _MinLight: 0.475
+    - _MinLight: 0.33
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Offset: 1.1
@@ -83,18 +86,18 @@ Material:
     - _Segmented: 1
     - _ShnIntense: 0
     - _ShnOverlap: 0
-    - _ShnRange: 0.262
+    - _ShnRange: 0
     - _ShnSmooth: 0
     - _SmoothnessTextureChannel: 1
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _Steps: 25
-    - _StpSmooth: 1
+    - _Steps: 21.6
+    - _StpSmooth: 0.398
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _OtlColor: {r: 0.5377358, g: 0.5377358, b: 0.5377358, a: 1}
-    - _ShnColor: {r: 1, g: 1, b: 0, a: 1}
+    - _ShnColor: {r: 0.048171833, g: 0.056128494, b: 0.07618539, a: 1}
   m_BuildTextureStacks: []

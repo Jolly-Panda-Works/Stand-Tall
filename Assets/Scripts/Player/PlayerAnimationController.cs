@@ -32,5 +32,15 @@ namespace JollyPanda.LastFlag.PlayerModule
         {
             animator.SetBool(fire, shooting);
         }
+
+        internal void Pause()
+        {
+            animator.speed = 0;
+        }
+
+        internal void Resume()
+        {
+            animator.speed = 1;
+        }
     }
 }

@@ -16,6 +16,8 @@ namespace JollyPanda.LastFlag.EnemyModule
         public Slider healthSlider;
 
         public event Action<int> OnHealthChange;
+        public event Action OnDead;
+        public event Action OnRevive;
 
         private void Awake()
         {
@@ -28,6 +30,14 @@ namespace JollyPanda.LastFlag.EnemyModule
             isFalling = false;
             SetHealth(maxHealth);
             ShowHealthBar(true);
+            OnRevive?.Invoke();
+        }
+
+        internal void SetMaxHealth(int value)
+        {
+            maxHealth = value;
+            healthSlider.maxValue = maxHealth;
+            SetHealth(maxHealth);
         }
 
         public void TakeDamage(int amount)
@@ -44,6 +54,7 @@ namespace JollyPanda.LastFlag.EnemyModule
             if (currentHealth <= 0 && !isFalling)
             {
                 isFalling = true;
+                OnDead?.Invoke();
             }
         }
 

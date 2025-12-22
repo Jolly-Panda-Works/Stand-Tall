@@ -1,6 +1,6 @@
-using JollyPanda.LastFlag.Handlers;
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace JollyPanda.LastFlag.PlayerModule
 {
@@ -13,6 +13,8 @@ namespace JollyPanda.LastFlag.PlayerModule
 
         [SerializeField] private BulletPool BulletPool;
 
+        [SerializeField] private UnityEvent onFire;
+
         private float fireRate = 0.5f;
         private int bulletDamage;
         private float bulletSize;
@@ -20,7 +22,9 @@ namespace JollyPanda.LastFlag.PlayerModule
 
         private float timer;
 
-        private bool isActive = true;
+        private bool isActive = false;
+
+        private Action _onFire;
 
         void Update()
         {
@@ -37,14 +41,30 @@ namespace JollyPanda.LastFlag.PlayerModule
 
         void Fire()
         {
-            var bullet = BulletPool.GetBullet(bulletDamage, bulletSize, bulletSpeed);
-            bullet.transform.position = FirePoint.position;
-            bullet.transform.rotation = FirePoint.rotation;
+            BulletPool.GetBullet(bulletDamage, bulletSize, bulletSpeed, true, FirePoint.position, FirePoint.rotation);
+            onFire?.Invoke();
         }
 
         internal void SetActive(bool isActive)
         {
             this.isActive = isActive;
+        }
+
+        internal void DisableAllBullets()
+        {
+            BulletPool.ReturnAllBullet();
+        }
+
+        internal void PauseBulletsMoving(bool isPause)
+        {
+            if (isPause)
+            {
+                BulletPool.PauseMoving();
+            }
+            else
+            {
+                BulletPool.ResumeMoving();
+            }
         }
 
         public void SetFireRate(float fireRate)
@@ -59,12 +79,17 @@ namespace JollyPanda.LastFlag.PlayerModule
 
         public void SetBulletSize(float scale)
         {
-            bulletSize= scale;
+            bulletSize = scale;
         }
 
         public void SetBulletSpeed(float speed)
         {
             bulletSpeed = speed;
+        }
+
+        public void SetFireAction(Action action)
+        {
+            _onFire = action;
         }
     }
 }

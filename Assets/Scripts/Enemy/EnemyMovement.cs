@@ -32,11 +32,12 @@ namespace JollyPanda.LastFlag.EnemyModule
             }
         }
 
-        public void Climbing()
+        public void Climbing(bool invokeEvent = true)
         {
             canClimb = true;
             isFalling = false;
-            OnStartClimbing?.Invoke();
+            if (invokeEvent)
+                OnStartClimbing?.Invoke();
         }
 
         public void StopClimbing()

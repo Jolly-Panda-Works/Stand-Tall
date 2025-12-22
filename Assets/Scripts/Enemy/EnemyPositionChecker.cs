@@ -39,6 +39,12 @@ namespace JollyPanda.LastFlag.EnemyModule
             }
         }
 
+        private void OnEnable()
+        {
+            SetCheckState(CheckState.MoveUp);
+            hasReachedTop = false;
+        }
+
         public void SetCheckState(CheckState state)
         {
             checkState = state;

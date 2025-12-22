@@ -8,6 +8,8 @@ namespace JollyPanda.LastFlag.PlayerModule
         [SerializeField, Min(0.01f)] private float speed = 10f;
         [SerializeField, Min(1f)] private int damage = 1;
 
+        public bool CanMoving { private get; set; }
+
         private void OnEnable()
         {
             Informant.OnLose += ForceDestory;
@@ -20,11 +22,15 @@ namespace JollyPanda.LastFlag.PlayerModule
 
         private void ForceDestory()
         {
-            DestroyImmediate(gameObject);
+            gameObject.SetActive(false);
         }
 
         void Update()
         {
+            if (!CanMoving)
+            {
+                return;
+            }
             // Move straight down in world space
             transform.Translate(speed * Time.deltaTime * Vector3.down, Space.World);
         }

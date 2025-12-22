@@ -34,12 +34,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2417218681625340016, guid: 08ef201c28fdb354e9d454b83d6b8a5f, type: 3}
       propertyPath: m_Name
-      value: UpgradeSlot-BulletSize Variant
+      value: UpgradeSlot-BulletSize
       objectReference: {fileID: 0}
     - target: {fileID: 4053584698923701965, guid: 08ef201c28fdb354e9d454b83d6b8a5f, type: 3}
       propertyPath: m_text
       value: Bullet Size
       objectReference: {fileID: 0}
+    - target: {fileID: 8852293595673258832, guid: 08ef201c28fdb354e9d454b83d6b8a5f, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: a05c8f145cc7e804a9761496e943961d, type: 3}
     - target: {fileID: 8974287653631210581, guid: 08ef201c28fdb354e9d454b83d6b8a5f, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

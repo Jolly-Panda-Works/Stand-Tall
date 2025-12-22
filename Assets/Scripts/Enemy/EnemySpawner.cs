@@ -1,3 +1,4 @@
+using JollyPanda.LastFlag.Database;
 using JollyPanda.LastFlag.Handlers;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,35 +15,43 @@ namespace JollyPanda.LastFlag.EnemyModule
     {
         [Header("Spawn Settings")]
         [Tooltip("Number of points around the cylinder where enemies can spawn.")]
-        public int numberOfSpawnPoints = 8;
+        [SerializeField] private int numberOfSpawnPoints = 8;
+        
+        [Tooltip("Rope prefab that grows from spawn point.")]
+        [SerializeField] private RopeGrower ropePrefab;
+        private RopeGrower[] ropeGrowers = new RopeGrower[0];
 
         [Tooltip("Radius of the circular spawn area around the center.")]
-        public float radius = 2f;
+        [SerializeField] private float radius = 2f;
 
         [Tooltip("Height of the visual gizmo for spawn lines.")]
-        public float height = 5f;
+        [SerializeField] private float height = 5f;
 
         [Tooltip("Reference to the cylinder renderer (optional, not used in logic).")]
-        public Renderer cylinderRenderer;
+        [SerializeField] private Renderer cylinderRenderer;
 
         [Header("Hierarchy")]
         [Tooltip("Parent transform under which all spawned enemies will be organized.")]
-        public Transform enemyParent;
-
+        [SerializeField] private Transform enemyParent;
+        [SerializeField] private float outwardOffset;
         // Array holding spawn point transforms positioned around the cylinder
         private Transform[] spawnPoints;
 
         [Header("Wave Settings")]
-        public WaveData[] waves;
-        private int currentWaveIndex = 0;
+        [SerializeField] private WaveDataGenerator waveDataGenerator;
+        private WaveData currentWaveData;
         private int spawnedInWave = 0;
         private bool waveInProgress = false;
 
         private int aliveEnemies = 0;
         private int totalEnemies = 0;
 
+        private bool isPaused = false;
+
         public event WaveEventHandler OnWaveStart;
         public event WaveEventHandler OnWaveEnd;
+
+        private Dictionary<int, List<Enemy>> activeEnemiesPerPoint = new();
 
         // Dictionary mapping each prefab to its pool of reusable GameObjects
         private Dictionary<Enemy, Queue<Enemy>> enemyPools = new();
@@ -54,12 +63,71 @@ namespace JollyPanda.LastFlag.EnemyModule
         {
             Informant.OnLose += StopSpawning;
             Informant.OnStart += StartSpawningWave;
+            Informant.OnChangeUIPage += DestroyEnemies;
+            Informant.OnPause += Informant_OnPause;
         }
 
         private void OnDisable()
         {
             Informant.OnLose -= StopSpawning;
             Informant.OnStart -= StartSpawningWave;
+            Informant.OnChangeUIPage -= DestroyEnemies;
+            Informant.OnPause -= Informant_OnPause;
+        }
+
+        private void Informant_OnPause(bool isPause)
+        {
+            if (isPause)
+                PauseSpawning();
+            else
+                ResumeSpawning();
+        }
+
+        void PauseSpawning()
+        {
+            if (!isPaused)
+            {
+                isPaused = true;
+                CancelInvoke(nameof(SpawnEnemy));
+            }
+        }
+
+        void ResumeSpawning()
+        {
+            if (isPaused)
+            {
+                isPaused = false;
+                if (waveInProgress)
+                {
+                    InvokeRepeating(nameof(SpawnEnemy), 0f, currentWaveData.SpawnInterval);
+                }
+            }
+        }
+
+        private void DestroyEnemies(PageType type)
+        {
+            if (type == PageType.Home)
+            {
+                DestroyEnemies();
+
+                StopSpawning();
+            }
+
+            foreach (var rope in ropeGrowers)
+            {
+                rope?.Shrink();
+            }
+        }
+
+        private void DestroyEnemies()
+        {
+            foreach (var enemyQueue in enemyPools.Values)
+            {
+                foreach (var enemy in enemyQueue)
+                {
+                    enemy.gameObject.SetActive(false);
+                }
+            }
         }
 
         /// <summary>
@@ -67,9 +135,29 @@ namespace JollyPanda.LastFlag.EnemyModule
         /// </summary>
         void Start()
         {
-            GenerateSpawnPoints();
             spawnCooldowns = new float[numberOfSpawnPoints];
-            StartSpawningWave();
+            GenerateSpawnPoints();
+        }
+
+        private void Update()
+        {
+            for (int i = 0; i < spawnCooldowns.Length; i++)
+            {
+                if (spawnCooldowns[i] > 0f)
+                {
+                    spawnCooldowns[i] -= Time.deltaTime;
+
+                    if (spawnCooldowns[i] <= 0f)
+                    {
+                        spawnCooldowns[i] = 0f;
+
+                        if (activeEnemiesPerPoint[i].Count == 0)
+                        {
+                            ropeGrowers[i].Shrink();
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -77,20 +165,33 @@ namespace JollyPanda.LastFlag.EnemyModule
         /// </summary>
         void GenerateSpawnPoints()
         {
+            ropeGrowers = new RopeGrower[numberOfSpawnPoints];
             spawnPoints = new Transform[numberOfSpawnPoints];
+
             for (int i = 0; i < numberOfSpawnPoints; i++)
             {
+                activeEnemiesPerPoint[i] = new List<Enemy>();
+
                 float angle = i * Mathf.PI * 2f / numberOfSpawnPoints;
-                Vector3 position = new(
+                Vector3 localPos = new(
                     Mathf.Cos(angle) * radius,
                     -height / 2f,
                     Mathf.Sin(angle) * radius
                 );
 
-                GameObject point = new GameObject("SpawnPoint_" + i);
-                point.transform.position = transform.position + position;
-                point.transform.parent = transform;
-                spawnPoints[i] = point.transform;
+                Vector3 worldPos = transform.position + localPos;
+
+                GameObject startGO = new GameObject("StartPoint_" + i);
+                startGO.transform.position = worldPos;
+                startGO.transform.SetParent(transform);
+
+                RopeGrower rope = Instantiate(ropePrefab, transform);
+                rope.name = "Rope_" + i;
+
+                rope.Initialize(height, startGO.transform);
+
+                spawnPoints[i] = startGO.transform;
+                ropeGrowers[i] = rope;
             }
         }
 
@@ -98,7 +199,10 @@ namespace JollyPanda.LastFlag.EnemyModule
 
         void SpawnEnemy()
         {
-            if (currentWaveIndex >= waves.Length || spawnedInWave >= waves[currentWaveIndex].EnemyCount)
+            if (isPaused)
+                return;
+
+            if (spawnedInWave >= currentWaveData.EnemyCount)
                 return;
 
             int spawnIndex = GetValidSpawnPointIndex();
@@ -132,24 +236,34 @@ namespace JollyPanda.LastFlag.EnemyModule
 
         void SpawnEnemyAtPoint(int spawnIndex)
         {
-            var wave = waves[currentWaveIndex];
-            var prefab = wave.EnemyPrefabs[Random.Range(0, wave.EnemyPrefabs.Length)];
+            var prefab = currentWaveData.EnemyPrefabs[Random.Range(0, currentWaveData.EnemyPrefabs.Length)];
             var enemy = GetFromPool(prefab);
 
             if (enemy == null) return;
 
             PositionEnemyAtSpawnPoint(enemy, spawnIndex);
-            SetEnemyBehavior(enemy, wave);
+            activeEnemiesPerPoint[spawnIndex].Add(enemy);
+            enemy.CurrentSpawnIndex = spawnIndex;
 
+            SetEnemyBehavior(enemy);
+
+            ropeGrowers[spawnIndex].Grow();
             spawnCooldowns[spawnIndex] = 0.9f; // Reset cooldown for this spawn point
 
             spawnedInWave++;
-            aliveEnemies++;
         }
 
         void PositionEnemyAtSpawnPoint(Enemy enemy, int spawnIndex)
         {
-            enemy.transform.position = spawnPoints[spawnIndex].position;
+            Vector3 basePosition = spawnPoints[spawnIndex].position;
+
+            Vector3 directionFromCenter = (basePosition - transform.position);
+            directionFromCenter.y = 0;
+            directionFromCenter.Normalize();
+
+            Vector3 finalPosition = basePosition + directionFromCenter * outwardOffset;
+
+            enemy.transform.position = finalPosition;
 
             Vector3 directionToCenter = transform.position - enemy.transform.position;
             directionToCenter.y = 0;
@@ -160,17 +274,24 @@ namespace JollyPanda.LastFlag.EnemyModule
             }
         }
 
-        void SetEnemyBehavior(Enemy enemy, WaveData wave)
+        void SetEnemyBehavior(Enemy enemy)
         {
-            enemy.SetClimbSpeed(Random.Range(wave.MinSpeed, wave.MaxSpeed));
+            enemy.SetClimbSpeed(Random.Range(currentWaveData.MinSpeed, currentWaveData.MaxSpeed));
+            enemy.SetHealth(Random.Range(currentWaveData.MinHealth, currentWaveData.MaxHealth));
             enemy.SetDeadAction((killedEnemy) =>
             {
                 aliveEnemies--;
+                activeEnemiesPerPoint[killedEnemy.CurrentSpawnIndex].Remove(killedEnemy);
+
                 if (aliveEnemies <= 0 && waveInProgress)
                 {
                     EndCurrentWave();
-                    Informant.NotifyEnemyKilled(aliveEnemies, totalEnemies);
                 }
+                Informant.NotifyEnemyKilled(aliveEnemies, totalEnemies);
+            });
+            enemy.SetReachAction((reachedEnemy) =>
+            {
+                Informant.NotifyEnemyReachedTop(reachedEnemy, Mathf.Abs(spawnedInWave - aliveEnemies));
             });
         }
 
@@ -206,11 +327,18 @@ namespace JollyPanda.LastFlag.EnemyModule
 
         private void StartSpawningWave()
         {
-            if (currentWaveIndex >= waves.Length) return;
+            DestroyEnemies();
 
-            var wave = waves[currentWaveIndex];
+            int currentWaveIndex = SaveSystem.GetCurrentWaveIndex();
+            currentWaveData = waveDataGenerator.GenerateWave(currentWaveIndex);
 
-            if (wave.EnemyPrefabs == null || wave.EnemyPrefabs.Length == 0)
+            if (currentWaveData.EnemyPrefabs == null || currentWaveData.EnemyPrefabs.Length == 0)
+            {
+                Debug.LogError($"Generated wave {currentWaveIndex} has no enemy prefabs!");
+                return;
+            }
+
+            if (currentWaveData.EnemyPrefabs == null || currentWaveData.EnemyPrefabs.Length == 0)
             {
                 Debug.LogError($"Wave {currentWaveIndex} has no enemy prefabs!");
                 return;
@@ -219,14 +347,15 @@ namespace JollyPanda.LastFlag.EnemyModule
             spawnedInWave = 0;
             waveInProgress = true;
 
-            aliveEnemies = 0;
-            totalEnemies = wave.EnemyCount;
+            aliveEnemies = currentWaveData.EnemyCount;
+            totalEnemies = currentWaveData.EnemyCount;
 
             OnWaveStart?.Invoke(currentWaveIndex);
             Informant.NotifyStartWave(currentWaveIndex);
 
             CancelInvoke(nameof(SpawnEnemy));
-            InvokeRepeating(nameof(SpawnEnemy), 0f, wave.SpawnInterval);
+            InvokeRepeating(nameof(SpawnEnemy), 0f, currentWaveData.SpawnInterval);
+            Informant.NotifyEnemyKilled(aliveEnemies, totalEnemies);
         }
 
         private void EndCurrentWave()
@@ -234,19 +363,11 @@ namespace JollyPanda.LastFlag.EnemyModule
             CancelInvoke(nameof(SpawnEnemy));
             waveInProgress = false;
 
-            var wave = waves[currentWaveIndex];
-            OnWaveEnd?.Invoke(currentWaveIndex);
-            Informant.NotifyFinishWave(currentWaveIndex, Mathf.Abs(spawnedInWave - aliveEnemies));
+            int waveIndex = SaveSystem.GetCurrentWaveIndex();
+            OnWaveEnd?.Invoke(waveIndex);
+            Informant.NotifyFinishWave(waveIndex, Mathf.Abs(spawnedInWave - aliveEnemies));
 
-            currentWaveIndex++;
-            if (currentWaveIndex < waves.Length)
-            {
-                Invoke(nameof(StartSpawningWave), waves[currentWaveIndex - 1].DelayAfterWave);
-            }
-            else
-            {
-                Debug.LogWarning("All waves completed. No more enemies will spawn.");
-            }
+            Invoke(nameof(StartSpawningWave), currentWaveData.DelayAfterWave);
         }
 
         private void StopSpawning()
@@ -281,9 +402,9 @@ namespace JollyPanda.LastFlag.EnemyModule
         {
             if (!waveInProgress) return;
 
-            Debug.LogWarning($"[Debug] Force skipping wave {currentWaveIndex}");
+            int waveIndex = SaveSystem.GetCurrentWaveIndex();
+            Debug.LogWarning($"[Debug] Force skipping wave {waveIndex}");
 
-            // Deactivate all alive enemies (optional, if you want to force-clear)
             foreach (Transform child in enemyParent)
             {
                 child.gameObject.SetActive(false);

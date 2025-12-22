@@ -17,6 +17,18 @@ namespace JollyPanda.LastFlag.Database
                 return Values[Level].cost;
             }
         }
+        public int NextLevelCost
+        {
+            get
+            {
+                var nextLevel = Level + 1;
+                
+               if(nextLevel <= MaxLevel)
+                    return Values[nextLevel].cost;
+
+                return 0;
+            }
+        }
 
         public float CurrentValue
         {

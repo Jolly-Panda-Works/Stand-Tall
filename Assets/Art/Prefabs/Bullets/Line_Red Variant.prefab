@@ -5,6 +5,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 4620020750972270163, guid: 8662f61ac5e430c4d86094547d5d08c4, type: 3}
@@ -62,6 +63,12 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 6877880122877903531, guid: 8662f61ac5e430c4d86094547d5d08c4, type: 3}
     - {fileID: 3190520437378240142, guid: 8662f61ac5e430c4d86094547d5d08c4, type: 3}
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7337557469308752290, guid: 8662f61ac5e430c4d86094547d5d08c4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2717713774903072842}
   m_SourcePrefab: {fileID: 100100000, guid: 8662f61ac5e430c4d86094547d5d08c4, type: 3}
 --- !u!1 &2057528340205586813 stripped
 GameObject:
@@ -77,9 +84,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 2057528340205586813}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6643ce8676e737540ba9784c1a6d5845, type: 3}
+  m_Script: {fileID: 11500000, guid: 8b42be0db681fae43aa00f03029e5acc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  force: 10
-  m_Speed: 50
-  m_Damage: 1
+  speed: 10
+  damage: 10

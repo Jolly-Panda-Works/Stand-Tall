@@ -44,7 +44,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fb7b6a8f187b234990cd9cf285abb96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 6369756801684211795, guid: e8eadea7ccf4fb947a2bca3d492d9070, type: 3}
-  firePoint: {fileID: 0}
-  fireRate: 0.5
-  parent: {fileID: 0}
+  <Id>k__BackingField: -1
+  <FirePoint>k__BackingField: {fileID: 0}
+  BulletPool:
+    bulletPrefab: {fileID: 6369756801684211795, guid: e8eadea7ccf4fb947a2bca3d492d9070, type: 3}
+    parent: {fileID: 0}
+  onFire:
+    m_PersistentCalls:
+      m_Calls: []

@@ -12,11 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3334f74548f199844bff8c1c89eff63a, type: 3}
   m_Name: WaveData_1
   m_EditorClassIdentifier: 
-  <WaveName>k__BackingField: Wave
   <EnemyPrefabs>k__BackingField:
   - {fileID: 810352909983491241, guid: 2d9ff0640a9ca6546b54dd7a177d720f, type: 3}
-  <EnemyCount>k__BackingField: 5
+  <EnemyCount>k__BackingField: 1
   <SpawnInterval>k__BackingField: 1
   <MinSpeed>k__BackingField: 1
-  <MaxSpeed>k__BackingField: 2
+  <MaxSpeed>k__BackingField: 1
   <DelayAfterWave>k__BackingField: 5

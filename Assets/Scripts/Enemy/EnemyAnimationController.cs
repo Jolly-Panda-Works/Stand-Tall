@@ -2,7 +2,6 @@ using UnityEngine;
 
 namespace JollyPanda.LastFlag.EnemyModule
 {
-    [RequireComponent(typeof(Animator))]
     public class EnemyAnimationController : MonoBehaviour
     {
         [SerializeField] private Animator animator;
@@ -31,6 +30,16 @@ namespace JollyPanda.LastFlag.EnemyModule
         internal void PlayHangingIdle()
         {
             animator.SetTrigger(hangingIdle);
+        }
+
+        internal void Pause()
+        {
+            animator.speed = 0;
+        }
+
+        internal void Resume()
+        {
+            animator.speed = 1;
         }
     }
 }
