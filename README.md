@@ -1,39 +1,37 @@
-# 🏴 Last Flag
+# 🌲 Stand Tall
 
-> **Defend the flag. Survive the climb. Hold the line.**
+> **Protect the cypress. Stand tall.**
 
-**Last Flag** is a Tower Defense game developed by **Jolly Panda Studio** for **PC and Android**.
+**Stand Tall** is a strategic Tower Defense game developed by **Jolly Panda Studio** for **PC and Android**.
 
-Players must defend their flag against waves of enemies climbing a vertical cylindrical battlefield. Build and manage your defenses, survive increasingly difficult waves, and keep the flag standing until the very end.
+In the game, players must defend a symbolic **cypress tree** against waves of enemies. Build and manage your defenses, stop enemies from reaching the tree, and survive increasingly challenging waves.
 
 ---
 
 ## 🎮 Game Overview
 
-In **Last Flag**, the enemy doesn't simply walk along a traditional path.
+The cypress stands at the center of the battlefield.
 
-Instead, enemies **climb around a cylindrical battlefield**, creating a unique defensive challenge where positioning, timing, and wave management are essential.
+Enemies approach in waves, becoming stronger and more challenging as the game progresses. Your goal is to build an effective defense and protect the cypress for as long as possible.
 
-Your objective is simple:
+The game is built around the idea of **standing strong under pressure**.
 
-**Protect the flag at all costs.**
-
-As the game progresses, enemy waves become stronger and more complex, requiring better defensive strategies and careful resource management.
+> **Protect the cypress. Stand tall.**
 
 ---
 
 ## ✨ Features
 
+* 🌲 Cypress-based defense objective
 * 🏰 Tower Defense gameplay
-* 🧗 Enemies climbing a cylindrical battlefield
-* 🏴 Flag-based objective
-* 🌊 Data-driven enemy wave system
+* 🌊 Wave-based enemy system
 * 👾 Multiple enemy types
 * 📈 Progressive difficulty
-* 🎯 Strategic tower placement
+* 🎯 Strategic defense placement
+* 🗺️ Level-based progression
 * 💾 Save & progression system
 * 🌍 Persian & English localization
-* 🔊 Centralized audio management
+* 🔊 Centralized audio system
 * 📱 Android support
 * 🖥️ PC support
 
@@ -41,48 +39,64 @@ As the game progresses, enemy waves become stronger and more complex, requiring 
 
 ## 🕹️ Gameplay
 
-The core gameplay loop is built around:
+The core gameplay loop consists of:
 
 1. **Prepare your defenses**
 2. **Start an enemy wave**
-3. **Defend the flag**
+3. **Defend the cypress**
 4. **Manage your towers and resources**
 5. **Survive the wave**
-6. **Prepare for the next challenge**
+6. **Upgrade and prepare for what comes next**
 
-Every wave introduces new challenges and gradually increases the pressure on the player.
+As the player progresses, enemies become stronger and new challenges are introduced.
+
+---
+
+## 🌲 The Cypress
+
+The central cypress tree represents **freedom, resilience, and standing tall in the face of adversity**.
+
+Rather than simply defending a traditional objective such as a flag or base, the game places the cypress at the heart of its identity and gameplay.
 
 ---
 
 ## 🧩 Technical Architecture
 
-Last Flag is built with **Unity** and follows a modular, data-driven approach.
+Stand Tall is developed using **Unity** and follows a modular and data-driven architecture.
 
 ### Wave System
 
-Enemy waves are generated using a custom:
+Enemy waves are generated through the custom:
 
 `WaveDataGenerator`
 
-This system allows enemy compositions and wave progression to be configured without hardcoding every wave directly into gameplay logic.
+This system allows enemy compositions, quantities, and progression to be configured without hardcoding individual waves.
 
-### Rope / Climbing System
+### Climbing System
 
-The cylindrical battlefield uses a custom:
+The battlefield uses a custom:
 
 `RopeGrower`
 
-system to handle the dynamically growing climbing path used by enemies.
+system to manage the dynamically growing climbing path used by enemies.
 
-This allows the battlefield and enemy progression to scale with the level design.
+This allows the battlefield and enemy progression to scale with level design.
 
 ---
 
-## 👾 Planned Enemy Types
+## 👾 Enemy System
 
-The game is designed around approximately **10 enemy types**, each introducing different gameplay characteristics and requiring different defensive strategies.
+The game is designed to support approximately **10 different enemy types**.
 
-Enemy variety is intended to be expanded throughout development.
+Each enemy type can introduce different:
+
+* Movement characteristics
+* Health values
+* Speeds
+* Behaviors
+* Defensive challenges
+
+The enemy system is designed to remain extensible so new enemy types can be added without heavily modifying existing gameplay systems.
 
 ---
 
@@ -92,44 +106,44 @@ The current design targets approximately:
 
 **50 Levels**
 
-Levels gradually introduce:
+Levels progressively introduce:
 
 * Stronger enemies
 * More difficult waves
 * New enemy behaviors
-* Increasing strategic pressure
-* More demanding defensive layouts
+* Increased strategic pressure
+* More challenging defensive situations
 
 ---
 
 ## 🌍 Localization
 
-Last Flag is designed with bilingual support:
+Stand Tall supports:
 
 * 🇬🇧 English
 * 🇮🇷 Persian
 
-The localization architecture is intended to make adding additional languages possible in the future.
+The localization architecture is designed to allow additional languages to be added in the future.
 
 ---
 
-## 🔊 Audio System
+## 🔊 Audio
 
-The project uses centralized audio management, including systems such as:
+The project uses a centralized audio architecture including:
 
 * `SoundManager`
 * `SoundTag`
-* Configurable music
+* Music management
 * Sound effects
-* Language-aware audio handling
+* Configurable audio settings
 
 ---
 
 ## 💾 Save System
 
-Player progression is handled through a centralized save architecture.
+Player progression and settings are handled through a centralized save system.
 
-The project is designed to support persistent:
+The system is designed to persist:
 
 * Level progression
 * Player settings
@@ -140,50 +154,58 @@ The project is designed to support persistent:
 
 ## 🛠️ Technology
 
-| Technology         | Usage                |
-| ------------------ | -------------------- |
-| Unity              | Game Engine          |
-| C#                 | Programming          |
-| JSON               | Data & Configuration |
-| Git                | Version Control      |
-| Unity Localization | Localization         |
-| Easy Save 3        | Save System          |
+| Technology             | Usage                |
+| ---------------------- | -------------------- |
+| **Unity**              | Game Engine          |
+| **C#**                 | Programming          |
+| **JSON**               | Data & Configuration |
+| **Git**                | Version Control      |
+| **Unity Localization** | Localization         |
+| **Easy Save 3**        | Save System          |
 
 ---
 
-## 📱 Target Platforms
+## 📱 Platforms
 
 ### Android
 
-Primary mobile target.
+Primary mobile platform.
 
 ### PC
 
-Desktop build for Windows.
+Windows desktop build.
 
 ---
 
 ## 🎨 Art Direction
 
-Last Flag combines a stylized game presentation with a gameplay-focused visual language.
+Stand Tall uses a stylized visual direction focused on:
 
-The visual direction is designed to keep the battlefield readable while maintaining a distinctive identity around the central **flag and cylindrical battlefield**.
+* Clear gameplay readability
+* Strong silhouettes
+* A distinctive central cypress
+* Clean and recognizable gameplay elements
+* A cohesive visual identity
+
+The cypress is the primary visual symbol of the game and is reflected throughout the game's presentation.
 
 ---
 
 ## 🚧 Development Status
 
+**Current Version: `v2.1.0`**
+
 **Status: In Development**
 
-The project is actively being developed and its systems are continuously being improved.
+The project is actively being developed and improved.
 
 ### Current Focus
 
-* Core gameplay refinement
-* Enemy systems
+* Gameplay refinement
+* Visual improvements
+* Enemy balancing
 * Wave balancing
 * Level progression
-* Tower systems
 * UI/UX improvements
 * Performance optimization
 * Android optimization
@@ -193,10 +215,8 @@ The project is actively being developed and its systems are continuously being i
 
 ## 🗂️ Project Structure
 
-The project follows a modular structure designed to keep gameplay systems, data, UI, and assets separated.
-
 ```text
-LastFlag/
+StandTall/
 ├── Assets/
 │   ├── Art/
 │   ├── Audio/
@@ -212,44 +232,38 @@ LastFlag/
 │   │   └── Utilities/
 │   └── Localization/
 │
-├── ProjectSettings/
-└── Packages/
+├── Packages/
+└── ProjectSettings/
 ```
 
 ---
 
-## 🧠 Development Philosophy
+## 🧠 Development Principles
 
-Last Flag is built with a focus on:
+Stand Tall is developed with a focus on:
 
-* **Modular systems**
-* **Reusable components**
-* **Data-driven design**
-* **Maintainable architecture**
+* **Modular architecture**
+* **Reusable systems**
+* **Data-driven gameplay**
+* **Maintainable code**
 * **Scalable content**
 * **Cross-platform development**
 
-The goal is to make adding new enemies, waves, levels, and gameplay systems as straightforward as possible.
+The goal is to make new enemies, waves, levels, and gameplay systems easy to implement and maintain.
 
 ---
 
-## 🏴 About Jolly Panda
-
-**Last Flag** is an independent game project developed under the **Jolly Panda** brand.
-
-Jolly Panda focuses on creating experimental games, interactive experiences, and game-development projects.
-
----
-
-## 📌 Roadmap
+## 🗺️ Roadmap
 
 * [x] Core Unity project
 * [x] Basic enemy system
-* [x] Cylindrical climbing concept
+* [x] Cypress defense concept
+* [x] Cylindrical climbing system
 * [x] Wave generation architecture
 * [x] Rope growth system
-* [x] Tower system expansion
-* [x] Enemy variety
+* [x] Initial visual refresh
+* [x] Expand tower system
+* [x] Expand enemy variety
 * [x] Level progression
 * [x] Boss enemies
 * [x] Advanced balancing
@@ -257,6 +271,14 @@ Jolly Panda focuses on creating experimental games, interactive experiences, and
 * [x] PC release build
 * [x] Final polish
 * [x] Public release
+
+---
+
+## 🏴 About Jolly Panda
+
+**Stand Tall** is an independent game developed under the **Jolly Panda** brand.
+
+Jolly Panda focuses on creating games, interactive experiences, and experimental projects with an emphasis on gameplay, technology, and creative design.
 
 ---
 
@@ -270,7 +292,7 @@ The source code, artwork, assets, game design, and other project materials are o
 
 <p align="center">
 
-**🏴 Defend the Last Flag.**
+**🌲 Protect the Cypress. Stand Tall.**
 
 Made with ❤️ by **Jolly Panda**
 
