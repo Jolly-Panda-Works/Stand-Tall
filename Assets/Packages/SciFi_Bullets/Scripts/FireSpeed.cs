@@ -11,6 +11,6 @@ public class FireSpeed : MonoBehaviour
     // Will push the game object forward.
     void Start()
     {
-        GetComponent<Rigidbody>().velocity = transform.forward * fireSpeed;
+        GetComponent<Rigidbody>().linearVelocity = transform.forward * fireSpeed;
     }
 }
