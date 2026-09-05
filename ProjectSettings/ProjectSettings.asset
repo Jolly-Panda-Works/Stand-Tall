@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: JollyPanda
-  productName: LastFlag
+  productName: StandTall
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 1, g: 1, b: 1, a: 1}
@@ -152,7 +152,7 @@ PlayerSettings:
   loadStoreDebugModeEnabled: 0
   visionOSBundleVersion: 1.0
   tvOSBundleVersion: 1.0
-  bundleVersion: 2.1.0
+  bundleVersion: 1.0.0
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -173,7 +173,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.1
   androidMinAspectRatio: 1
   applicationIdentifier:
-    Android: com.JollyPanda.LastFlag
+    Android: com.JollyPanda.StandTall
   buildNumber:
     Standalone: 0
     VisionOS: 0
@@ -276,8 +276,8 @@ PlayerSettings:
   AndroidTargetArchitectures: 3
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
-  AndroidKeystoreName: F:/Jolly Panda Studio/Mobile Games/com.jollypanda.lastflag.keystore
-  AndroidKeyaliasName: lastflag
+  AndroidKeystoreName: F:/Jolly Panda Studio/Mobile Games/com.jollypanda.standtall.keystore
+  AndroidKeyaliasName: dykvojyagijy
   AndroidEnableArmv9SecurityFeatures: 0
   AndroidEnableArm64MTE: 0
   AndroidBuildApkPerCpuArchitecture: 0
@@ -373,8 +373,8 @@ PlayerSettings:
       m_Kind: 0
       m_SubKind: 
     - m_Textures:
-      - {fileID: 2800000, guid: 5cac84bb2b176f0418fe4d3fe56db9db, type: 3}
-      - {fileID: 2800000, guid: 5cac84bb2b176f0418fe4d3fe56db9db, type: 3}
+      - {fileID: 2800000, guid: c348cfc2ecdb25f4fa265931f1bc468e, type: 3}
+      - {fileID: 2800000, guid: c348cfc2ecdb25f4fa265931f1bc468e, type: 3}
       m_Width: 432
       m_Height: 432
       m_Kind: 2

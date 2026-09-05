@@ -1,5 +1,5 @@
 # ninja log v5
-1	329	8103283146399791	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	5baad063dd2f5543
-331	488	8103283147975839	F:/Jolly Panda Studio/Mobile Games/Tower-Upper/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/j5v4k6x2/obj/arm64-v8a/libswappywrapper.so	e983bd57146b239e
-4	863	8103311727759401	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	5baad063dd2f5543
-863	1045	8103311729445569	F:/Jolly Panda Studio/Mobile Games/Tower-Upper/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/j5v4k6x2/obj/arm64-v8a/libswappywrapper.so	e983bd57146b239e
+2	199	8103321210834325	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	5baad063dd2f5543
+199	357	8103321212492194	F:/Jolly Panda Studio/Mobile Games/Tower-Upper/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/j5v4k6x2/obj/arm64-v8a/libswappywrapper.so	e983bd57146b239e
+3	154	8103373744392809	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	5baad063dd2f5543
+154	316	8103373745776547	F:/Jolly Panda Studio/Mobile Games/Tower-Upper/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/j5v4k6x2/obj/arm64-v8a/libswappywrapper.so	e983bd57146b239e

@@ -4178,6 +4178,10 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1125469387907356835, guid: 80fb5799ecf6a084faa18e393d4bd0f4, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1593615870395876440, guid: 80fb5799ecf6a084faa18e393d4bd0f4, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -4299,6 +4303,18 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5459558350455265331, guid: 80fb5799ecf6a084faa18e393d4bd0f4, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6630460333301194351, guid: 80fb5799ecf6a084faa18e393d4bd0f4, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6631042956447893189, guid: 80fb5799ecf6a084faa18e393d4bd0f4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6631086451588428239, guid: 80fb5799ecf6a084faa18e393d4bd0f4, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
@@ -5158,6 +5174,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 171.7168
       objectReference: {fileID: 0}
+    - target: {fileID: 6653557397215837757, guid: 80fb5799ecf6a084faa18e393d4bd0f4, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: d688ab17c5b4b5544abd374deb0c17ed, type: 2}
     - target: {fileID: 6833004024292535422, guid: 80fb5799ecf6a084faa18e393d4bd0f4, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
@@ -5752,7 +5772,11 @@ PrefabInstance:
     - target: {fileID: 5316310576758862252, guid: 71af65e9ea007ac43bea4264a092fc6c, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: f6891c8cab581de498db6fb12b3362e0, type: 3}
+      objectReference: {fileID: 21300000, guid: 76c677d8c2d0d1b4daf6be4fd6017a3d, type: 3}
+    - target: {fileID: 5516372439711105097, guid: 71af65e9ea007ac43bea4264a092fc6c, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5578594411598794108, guid: 71af65e9ea007ac43bea4264a092fc6c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
