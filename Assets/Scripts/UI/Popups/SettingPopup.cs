@@ -23,7 +23,9 @@ namespace MJUtilities.UI
 
         private void OnDisable()
         {
-            USound.SoundManager.Instance.Save();
+            // SoundManager can already be destroyed while the application quits
+            if (USound.SoundManager.HasInstance)
+                USound.SoundManager.Instance.Save();
         }
 
         public override void OnAwake()

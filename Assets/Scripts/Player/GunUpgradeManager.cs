@@ -31,6 +31,17 @@ namespace JollyPanda.LastFlag.PlayerModule
                 return;
             }
             instance = this;
+
+            Validate(fireRateUpgrade, nameof(fireRateUpgrade));
+            Validate(damageUpgrade, nameof(damageUpgrade));
+            Validate(bulletSizeUpgrade, nameof(bulletSizeUpgrade));
+            Validate(bulletSpeedUpgrade, nameof(bulletSpeedUpgrade));
+        }
+
+        private static void Validate(UpgradeData data, string label)
+        {
+            if (data == null || data.Values == null || data.Values.Length != UpgradeData.MaxLevel + 1)
+                Debug.LogError($"GunUpgradeManager.{label}: Values must contain {UpgradeData.MaxLevel + 1} entries (levels 0..{UpgradeData.MaxLevel}).");
         }
 
         private void OnEnable()
@@ -56,10 +67,11 @@ namespace JollyPanda.LastFlag.PlayerModule
 
         private void LoadPlayerData()
         {
-            fireRateUpgrade.Level = SaveSystem.GetFireRateLevel();
-            damageUpgrade.Level = SaveSystem.GetDamageLevel();
-            bulletSizeUpgrade.Level = SaveSystem.GetBulletSizeLevel();
-            bulletSpeedUpgrade.Level = SaveSystem.GetBulletSpeedLevel();
+            // Clamp: a corrupted save or a lowered MaxLevel must not crash the game.
+            fireRateUpgrade.Level = Mathf.Clamp(SaveSystem.GetFireRateLevel(), 0, UpgradeData.MaxLevel);
+            damageUpgrade.Level = Mathf.Clamp(SaveSystem.GetDamageLevel(), 0, UpgradeData.MaxLevel);
+            bulletSizeUpgrade.Level = Mathf.Clamp(SaveSystem.GetBulletSizeLevel(), 0, UpgradeData.MaxLevel);
+            bulletSpeedUpgrade.Level = Mathf.Clamp(SaveSystem.GetBulletSpeedLevel(), 0, UpgradeData.MaxLevel);
         }
 
         public void ApplyUpgrades()

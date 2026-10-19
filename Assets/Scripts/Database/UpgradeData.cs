@@ -6,7 +6,7 @@ namespace JollyPanda.LastFlag.Database
     public class UpgradeData
     {
         public int Level { get; set; } = 0;
-        [field: SerializeField] public Value[] Values { get; private set; } = new Value[MaxLevel];
+        [field: SerializeField] public Value[] Values { get; private set; } = new Value[MaxLevel + 1];
 
         public static int MaxLevel => 4;
         public bool CanUpgrade => Level < MaxLevel;
@@ -14,7 +14,7 @@ namespace JollyPanda.LastFlag.Database
         {
             get
             {
-                return Values[Level].cost;
+                return Values[Mathf.Clamp(Level, 0, MaxLevel)].cost;
             }
         }
         public int NextLevelCost
@@ -34,7 +34,7 @@ namespace JollyPanda.LastFlag.Database
         {
             get
             {
-                return Values[Level].value;
+                return Values[Mathf.Clamp(Level, 0, MaxLevel)].value;
             }
         }
 

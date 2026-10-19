@@ -1,13 +1,15 @@
 using JollyPanda.LastFlag.Handlers;
 using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace JollyPanda.LastFlag.EnviromentModule
 {
     public class CylinderRotator : MonoBehaviour
     {
         [Header("Rotation Settings")]
-        public float rotationSpeed = 100f;
+        [Tooltip("Degrees of rotation per pixel of finger/mouse movement (frame-rate independent).")]
+        public float rotationDegreesPerPixel = 1.6f;
         public float mouseSensitivity = 1f;
         public float touchSensitivity = 0.3f;
         public float smoothTime = 0.1f;
@@ -16,6 +18,7 @@ namespace JollyPanda.LastFlag.EnviromentModule
         public float resetDuration = 1f;
 
         private Vector2 lastMousePosition;
+        private bool pointerStartedOnUI;
         private bool isActive = false;
         private Quaternion defaultRotation;
 
@@ -38,6 +41,7 @@ namespace JollyPanda.LastFlag.EnviromentModule
         {
             Informant.OnChangeUIPage += SwitchActive;
             Informant.OnFinish += Disable;
+            Informant.OnLose += Disable;
             Informant.OnWaveStart += Enable;
             Informant.OnPause += SwitchActive;
         }
@@ -46,6 +50,7 @@ namespace JollyPanda.LastFlag.EnviromentModule
         {
             Informant.OnChangeUIPage -= SwitchActive;
             Informant.OnFinish -= Disable;
+            Informant.OnLose -= Disable;
             Informant.OnWaveStart -= Enable;
             Informant.OnPause -= SwitchActive;
         }
@@ -108,19 +113,31 @@ namespace JollyPanda.LastFlag.EnviromentModule
         {
             if (Input.GetMouseButtonDown(0))
             {
+                // a touch that starts on a button (pause, ...) must not rotate the cylinder
+                pointerStartedOnUI = IsPointerOverUI();
                 lastMousePosition = Input.mousePosition;
             }
-            else if (Input.GetMouseButton(0))
+            else if (Input.GetMouseButton(0) && !pointerStartedOnUI)
             {
                 Vector2 currentMousePosition = Input.mousePosition;
                 Vector2 delta = currentMousePosition - lastMousePosition;
 
                 float sensitivity = Input.touchCount > 0 ? touchSensitivity : mouseSensitivity;
-                float rotationDelta = -delta.x * rotationSpeed * sensitivity * Time.deltaTime;
-
-                targetRotationY += rotationDelta;
+                // delta is already "pixels per frame", so no Time.deltaTime here
+                targetRotationY += -delta.x * rotationDegreesPerPixel * sensitivity;
                 lastMousePosition = currentMousePosition;
             }
+        }
+
+        private static bool IsPointerOverUI()
+        {
+            if (EventSystem.current == null)
+                return false;
+
+            if (Input.touchCount > 0)
+                return EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId);
+
+            return EventSystem.current.IsPointerOverGameObject();
         }
 
         private void SmoothRotate()

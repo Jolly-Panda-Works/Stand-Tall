@@ -20,19 +20,24 @@ namespace JollyPanda.LastFlag.EnemyModule
         private void OnEnable()
         {
             health.OnDead += Falling;
-            health.OnRevive += Climbing;
             //movement.OnStartClimbing += Climbing;
             //movement.OnStartFalling += Falling;
             positionChecker.OnEnemyReachedTop += ReachingTop;
             positionChecker.OnEnemyReachedGround += ReachingGround;
             Informant.OnEnemyReachedTop += OneEnemyReachedTop;
             Informant.OnPause += PauseAnything;
+
+            // an enemy disabled in the middle of a pause must not keep animator.speed = 0
+            animationController.Resume();
+
+            // Start climbing from here instead of relying on EnemyHealth.OnEnable -> OnRevive,
+            // which only worked when EnemyHealth was enabled after this component.
+            Climbing();
         }
 
         private void OnDisable()
         {
             health.OnDead -= Falling;
-            health.OnRevive -= Climbing;
             //movement.OnStartClimbing -= Climbing;
             //movement.OnStartFalling -= Falling;
             positionChecker.OnEnemyReachedTop -= ReachingTop;
@@ -99,16 +104,12 @@ namespace JollyPanda.LastFlag.EnemyModule
 
         private void PauseAnything(bool isPause)
         {
+            movement.SetPaused(isPause);
+
             if (isPause)
-            {
-                movement.StopClimbing();
                 animationController.Pause();
-            }
             else
-            {
-                movement.Climbing(false);
                 animationController.Resume();
-            }
         }
 
         internal void SetHealth(int value)

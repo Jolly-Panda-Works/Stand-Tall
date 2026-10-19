@@ -2,7 +2,6 @@ using JollyPanda.LastFlag.Handlers;
 using MJUtilities.UI;
 using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 [DefaultExecutionOrder(-100)]
 public class GameManager : MonoBehaviour
@@ -14,11 +13,6 @@ public class GameManager : MonoBehaviour
             instance = this;
     }
     
-    
-    public void LoadLevel(int sceneIndex)
-    {
-        SceneManager.LoadScene(sceneIndex);
-    }
     
     public void BackHome()
     {

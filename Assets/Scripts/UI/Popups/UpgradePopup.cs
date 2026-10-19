@@ -41,15 +41,6 @@ namespace MJUtilities.UI
         public override void OnSetValues()
         {
             BackButtonConfig();
-            
-            fireRateUpgradeButton.onClick.AddListener(FireRateUpgradeButtonClicked);
-            
-            damageUpgradeButton.onClick.AddListener(DamageUpgradeButtonClicked);
-            
-            bulletSpeedUpgradeButton.onClick.AddListener(BulletSpeedUpgradeButtonClicked);
-            
-            bulletSizeUpgradeButton.onClick.AddListener(BulletSizeUpgradeButtonClicked);
-
             LoadCurrentUpgradeStatus();
         }
 
@@ -119,24 +110,28 @@ namespace MJUtilities.UI
 
             var upgradeData = gunUpgradeManager.GetFireRateUpgradeData();
             fireRateUpgradeProgress.HandleUpgrade(upgradeData);
-            fireRateUpgradeButton.interactable = upgradeData.NextLevelCost <= currentMoney && upgradeData.Level < 4;
+            fireRateUpgradeButton.interactable = upgradeData.CanUpgrade && upgradeData.NextLevelCost <= currentMoney;
 
             upgradeData = gunUpgradeManager.GetDamageUpgradeData();
             damageUpgradeProgress.HandleUpgrade(upgradeData);
-            damageUpgradeButton.interactable = upgradeData.NextLevelCost <= currentMoney && upgradeData.Level < 4;
+            damageUpgradeButton.interactable = upgradeData.CanUpgrade && upgradeData.NextLevelCost <= currentMoney;
 
             upgradeData = gunUpgradeManager.GetBulletSpeedUpgradeData();
             bulletSpeedUpgradProgress.HandleUpgrade(upgradeData);
-            bulletSpeedUpgradeButton.interactable = upgradeData.NextLevelCost <= currentMoney && upgradeData.Level < 4;
+            bulletSpeedUpgradeButton.interactable = upgradeData.CanUpgrade && upgradeData.NextLevelCost <= currentMoney;
 
             upgradeData = gunUpgradeManager.GetBulletSizeUpgradeData();
             bulletSizeUpgradeProgress.HandleUpgrade(upgradeData);
-            bulletSizeUpgradeButton.interactable = upgradeData.NextLevelCost <= currentMoney && upgradeData.Level < 4;
+            bulletSizeUpgradeButton.interactable = upgradeData.CanUpgrade && upgradeData.NextLevelCost <= currentMoney;
         }
 
         public override void OnAwake()
         {
-            
+            // Listeners are added ONCE here. OnSetValues runs on every OpenPopup.
+            fireRateUpgradeButton.onClick.AddListener(FireRateUpgradeButtonClicked);
+            damageUpgradeButton.onClick.AddListener(DamageUpgradeButtonClicked);
+            bulletSpeedUpgradeButton.onClick.AddListener(BulletSpeedUpgradeButtonClicked);
+            bulletSizeUpgradeButton.onClick.AddListener(BulletSizeUpgradeButtonClicked);
         }
         
         private void ProfileChange(PlayerSaveData playerSaveData)

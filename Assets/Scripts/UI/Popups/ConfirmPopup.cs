@@ -8,8 +8,6 @@ namespace MJUtilities.UI
         [SerializeField] private Button confirmButton;
         [SerializeField] private Button cancelButton;
 
-        public bool loadScene;
-
         public override void OnAwake()
         {
             confirmButton.onClick.AddListener(OnConfirmClicked);
@@ -27,14 +25,15 @@ namespace MJUtilities.UI
             
         }
 
+        // ConfirmPopup is not used by the current flow. It only closes itself;
+        // subscribe to Confirmed to run a custom action when it is needed.
+        public event System.Action Confirmed;
+
         private void OnConfirmClicked()
         {
-            if(loadScene){
-                // GameManager.instance.LoadScene();
-                }
-            //else
-                //GameManager.instance.LoadScenario();
-        } 
+            Confirmed?.Invoke();
+            CloseThisPopup();
+        }
         
         private void OnCancelClicked()
         {

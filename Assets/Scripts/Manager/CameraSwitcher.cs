@@ -1,4 +1,4 @@
-using Cinemachine;
+
 using JollyPanda.LastFlag.Handlers;
 using System;
 using UnityEngine;
@@ -7,8 +7,8 @@ namespace JollyPanda.LastFlag.Manager
 {
     public class CameraSwitcher : MonoBehaviour
     {
-        [SerializeField] private CinemachineVirtualCamera cameraHome;
-        [SerializeField] private CinemachineVirtualCamera cameraGame;
+        [SerializeField] private Unity.Cinemachine.CinemachineVirtualCamera cameraHome;
+        [SerializeField] private Unity.Cinemachine.CinemachineVirtualCamera cameraGame;
 
         private void Start()
         {
@@ -22,7 +22,7 @@ namespace JollyPanda.LastFlag.Manager
 
         private void OnDisable()
         {
-            Informant.OnChangeUIPage += Switch;
+            Informant.OnChangeUIPage -= Switch;
         }
 
         private void Switch(PageType type)

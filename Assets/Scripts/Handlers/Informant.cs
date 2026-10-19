@@ -1,4 +1,5 @@
 using JollyPanda.LastFlag.Database;
+using JollyPanda.LastFlag.Economy;
 using JollyPanda.LastFlag.EnemyModule;
 using System;
 
@@ -10,6 +11,7 @@ namespace JollyPanda.LastFlag.Handlers
         public static event Action OnLose;
         public static event Action<int> OnEarnCoin;
         public static event Action OnStart;
+        public static event Action OnNextWave;
         public static event Action OnFinish;
         public static event Action<bool> OnPause;
         public static event Action<PageType> OnChangeUIPage;
@@ -27,16 +29,20 @@ namespace JollyPanda.LastFlag.Handlers
             OnEnemyReachedTop?.Invoke(enemy);
             OnLose?.Invoke();
 
-            int level = SaveSystem.GetCurrentWaveIndex();
-            int rewardPerEnemy = WaveDataGenerator.Instance.CalculateCoinRewardPerEnemy(level);
-            int earnedCoins = killedEnemy * rewardPerEnemy;
-            SaveSystem.AddMoney(earnedCoins);
+            int level = SaveSystem.GetCurrentWaveIndex() + 1; // same level rule as NotifyFinishWave
+            int earnedCoins = RewardService.GrantWaveReward(level, killedEnemy);
             OnEarnCoin?.Invoke(earnedCoins);
         }
 
         public static void NotifyStart()
         {
             OnStart?.Invoke();
+        }
+
+        /// <summary>Raised by the countdown popup (button or timer end) to begin the next wave.</summary>
+        public static void NotifyNextWave()
+        {
+            OnNextWave?.Invoke();
         }
 
         public static void PauseGame(bool isPause)
@@ -52,10 +58,8 @@ namespace JollyPanda.LastFlag.Handlers
         public static void NotifyFinishWave(int waveIndex, int killedEnemy)
         {
             int level = waveIndex + 1;
-            int rewardPerEnemy = WaveDataGenerator.Instance.CalculateCoinRewardPerEnemy(level);
-            int earnedCoins = killedEnemy * rewardPerEnemy;
+            int earnedCoins = RewardService.GrantWaveReward(level, killedEnemy);
 
-            SaveSystem.AddMoney(earnedCoins);
             SaveSystem.UpdateLastWaveIndex(waveIndex);
             OnEarnCoin?.Invoke(earnedCoins);
             OnWaveEnd?.Invoke(waveIndex, killedEnemy);

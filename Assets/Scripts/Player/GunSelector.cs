@@ -1,5 +1,6 @@
 ﻿using JollyPanda.LastFlag.Handlers;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace JollyPanda.LastFlag.PlayerModule
@@ -10,8 +11,30 @@ namespace JollyPanda.LastFlag.PlayerModule
 
         private Gun activeGun;
 
+        public IReadOnlyList<Gun> Guns => guns;
+
         public event Action<Gun> OnGunChange;
         public event Action OnGunFire;
+
+        private void Awake()
+        {
+            foreach (var gun in guns)
+            {
+                if (gun != null)
+                    gun.Fired += RaiseGunFire;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            foreach (var gun in guns)
+            {
+                if (gun != null)
+                    gun.Fired -= RaiseGunFire;
+            }
+        }
+
+        private void RaiseGunFire() => OnGunFire?.Invoke();
 
         private void OnEnable()
         {
@@ -25,6 +48,10 @@ namespace JollyPanda.LastFlag.PlayerModule
 
         private void Start()
         {
+            // With the shop system in the scene, LoadoutManager selects the equipped gun.
+            if (LoadoutManager.Instance != null)
+                return;
+
             if (guns.Length > 0)
             {
                 int randomIndex = UnityEngine.Random.Range(0, guns.Length);
@@ -43,8 +70,6 @@ namespace JollyPanda.LastFlag.PlayerModule
                     activeGun = gun;
                     //activeGun.SetActive(true);
 
-                    activeGun.SetFireAction(OnGunFire);
-
                     OnGunChange?.Invoke(activeGun);
                 }
                 else
@@ -56,6 +81,9 @@ namespace JollyPanda.LastFlag.PlayerModule
 
         private void ActiveGun()
         {
+            if (activeGun == null)
+                return;
+
             activeGun.SetActive(true);
         }
 

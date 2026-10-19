@@ -11,6 +11,33 @@ namespace JollyPanda.LastFlag.PlayerModule
         public Transform parent;
         private readonly List<Bullet> pool = new();
 
+        private Bullet defaultPrefab;
+        private bool defaultCaptured;
+
+        /// <summary>Changes the prefab used for new bullets. null = go back to the prefab assigned in the inspector.</summary>
+        public void SetBulletPrefab(Bullet prefab)
+        {
+            if (!defaultCaptured)
+            {
+                defaultPrefab = bulletPrefab;
+                defaultCaptured = true;
+            }
+
+            var target = prefab != null ? prefab : defaultPrefab;
+            if (target == bulletPrefab)
+                return;
+
+            // pooled bullets belong to the old prefab -> throw them away
+            foreach (var bullet in pool)
+            {
+                if (bullet != null)
+                    Object.Destroy(bullet.gameObject);
+            }
+            pool.Clear();
+
+            bulletPrefab = target;
+        }
+
         public Bullet GetBullet(int damage, float scale, float speed,bool isActive,Vector3 position,Quaternion rotation)
         {
             foreach (var bullet in pool)

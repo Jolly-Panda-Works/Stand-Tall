@@ -16,12 +16,28 @@ namespace JollyPanda.LastFlag.EnemyModule
         [Header("State Flags")]
         private bool canClimb;
         private bool isFalling;
+        private bool paused;
 
         public event Action OnStartClimbing;
         public event Action OnStartFalling;
 
+        private void OnEnable()
+        {
+            // pooled enemies must not start with the flag of their previous life
+            paused = false;
+        }
+
+        /// <summary>Pause only freezes movement. The climb/fall state stays untouched.</summary>
+        public void SetPaused(bool value)
+        {
+            paused = value;
+        }
+
         private void Update()
         {
+            if (paused)
+                return;
+
             if (canClimb)
             {
                 transform.Translate(climbSpeed * Time.deltaTime * Vector3.up);

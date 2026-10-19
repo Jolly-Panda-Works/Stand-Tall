@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using JollyPanda.LastFlag.EnemyModule;
 using JollyPanda.LastFlag.Handlers;
+using JollyPanda.LastFlag.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 using MJUtilities.UI;
@@ -39,8 +40,7 @@ public class HUDPage : UIPage
 
     public override void OnSetValues()
     {
-        pauseButton.onClick.RemoveAllListeners();
-        pauseButton.onClick.AddListener(PauseButtonClicked);        
+        // Listener is added once in OnAwake (RemoveAllListeners would remove the click sound).
     }
 
     private void Start()
@@ -51,6 +51,7 @@ public class HUDPage : UIPage
     public override void OnAwake()
     {
         newWaveNotificationCanvasGroup.alpha = 0;
+        pauseButton.onClick.AddListener(PauseButtonClicked);
     }
 
     private void PauseButtonClicked()
@@ -85,7 +86,7 @@ public class HUDPage : UIPage
     private IEnumerator WaveNotificationCoroutine(int waveIndex)
     {
         newWaveNotificationCanvasGroup.alpha = 1f;
-        startWaveText.text = $"Enemies rise!\n Wave {waveIndex} has begun!";
+        GameLocale.SetText(startWaveText, GameLocale.Format(GameText.WaveStarted, waveIndex));
 
         float duration = 5f;
         float timer = 0f;

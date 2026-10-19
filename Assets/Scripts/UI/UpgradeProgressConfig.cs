@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using JollyPanda.LastFlag.Database;
+using JollyPanda.LastFlag.Localization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,26 +15,25 @@ public class UpgradeProgressConfig : MonoBehaviour
 
     public void HandleUpgrade(UpgradeData upgradeData)
     {
-        SetUpgradeCostText(upgradeData.NextLevelCost.ToString());
         ActivateProgressImages(upgradeData.Level);
-        
-        if(upgradeData.Level == 4)
-            SetUpgradeCostText("MAX");
+        SetUpgradeCostText(upgradeData.CanUpgrade ? upgradeData.NextLevelCost.ToString() : GameLocale.Get(GameText.MaxLevel));
         
         //Debug.Log("level: " + upgradeData.Level + " cost: " + upgradeData.NextLevelCost + " value: " + upgradeData.CurrentValue, this);
     }
 
     private void ActivateProgressImages(int index)
     {
-        for (int i = 0; i < index; i++)
+        // turn ON the first `level` images and OFF the rest (e.g. after Reset Save Data)
+        for (int i = 0; i < activeProgressImages.Count; i++)
         {
-            activeProgressImages[i].gameObject.SetActive(true);
+            if (activeProgressImages[i] != null)
+                activeProgressImages[i].gameObject.SetActive(i < index);
         }
     }
 
     private void SetUpgradeCostText(string costText)
     {
-        upgradeCostText.text = costText;
+        GameLocale.SetText(upgradeCostText, costText);
     }
 
     [ContextMenu(nameof(ResetAllImages))]

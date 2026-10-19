@@ -66,7 +66,7 @@ public class SplashScreenController : MonoBehaviour
             item.canvasGroup.gameObject.SetActive(false);
         }
 
-        // Load next scene
-        SceneManager.LoadScene(sceneToLoad);
+        // Load next scene asynchronously (a synchronous load freezes the frame on phones)
+        yield return SceneManager.LoadSceneAsync(sceneToLoad);
     }
 }

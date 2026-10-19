@@ -8,8 +8,6 @@ using UnityEngine.UI;
 
 public class LosePopup : UIPopup
 {
-    public static LosePopup instance;
-
     [SerializeField] private TMP_Text coinText;
 
     [Header("Buttons")]

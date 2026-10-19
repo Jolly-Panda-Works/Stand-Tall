@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using System;
-using UnityEditor;
 using UnityEngine.Serialization;
 using JollyPanda.LastFlag.Handlers;
 
@@ -17,8 +16,6 @@ namespace MJUtilities.UI
         public List<UIPopup> popupList = new List<UIPopup>();
 
         private PageType currentPageType;
-        private bool hasActivePopup;
-        
 
         private void Awake()
         {
@@ -27,10 +24,14 @@ namespace MJUtilities.UI
                 if (!instance)
                 {
                     instance = this;
-                    DontDestroyOnLoad(this);
+                    DontDestroyOnLoad(gameObject);
                 }
                 else
+                {
+                    // Duplicate instance: do not initialise its pages/popups.
                     Destroy(gameObject);
+                    return;
+                }
             }
             else
             {
@@ -68,8 +69,6 @@ namespace MJUtilities.UI
             {
                 page.gameObject.SetActive(false);
             }
-            
-            hasActivePopup = false;
         }
 
         public void ClosePopups()
@@ -129,7 +128,9 @@ namespace MJUtilities.UI
         }
         public void OpenPage(PageType pageType, bool closeLastPage)
         {
-            ClosePage(currentPageType);
+            if (closeLastPage)
+                ClosePage(currentPageType);
+
             OpenPage(pageType);
         }
 
@@ -141,7 +142,6 @@ namespace MJUtilities.UI
                     continue;
 
                 page.gameObject.SetActive(false);
-                page.OnSetValues();
             }
         }
 
@@ -150,7 +150,17 @@ namespace MJUtilities.UI
             return GetPage(currentPageType);
         }
 
-        public bool HasActivePopup() => hasActivePopup;
+        /// <summary>True while at least one popup is really active (derived, so it can never go stale).</summary>
+        public bool HasActivePopup()
+        {
+            for (int i = 0; i < popupList.Count; i++)
+            {
+                if (popupList[i] != null && popupList[i].gameObject.activeSelf)
+                    return true;
+            }
+
+            return false;
+        }
 
         public void OpenPopup(PopupType popupType)
         {
@@ -159,7 +169,6 @@ namespace MJUtilities.UI
                 if (popup.popupType != popupType)
                     continue;
 
-                hasActivePopup = true;
                 popup.gameObject.SetActive(true);
                 popup.OnSetValues();
             }
@@ -172,14 +181,12 @@ namespace MJUtilities.UI
                 if (popup.popupType != popupType)
                     continue;
 
-                hasActivePopup = false;
                 popup.gameObject.SetActive(false);
             }
         }
         
         public void ClosePopup(UIPopup popup)
         {
-            hasActivePopup = false;
             popup.gameObject.SetActive(false);
         }
     }

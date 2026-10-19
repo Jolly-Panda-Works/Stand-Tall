@@ -29,7 +29,11 @@ namespace MJUtilities.UI
 
         public void BackButtonConfig()
         {
-            backButton.onClick.RemoveAllListeners();
+            if (backButton == null)
+                return; // the header says "Can Be Null"
+
+            // remove only our own handler, so other listeners (click sound) stay
+            backButton.onClick.RemoveListener(BackButtonClicked);
             backButton.onClick.AddListener(BackButtonClicked);
         }
         
@@ -47,6 +51,9 @@ namespace MJUtilities.UI
         Setting,
         Upgrade,
         Confirm,
-        Language
+        Language,
+        // appended at the end on purpose: existing popups keep their serialized values
+        Shop,
+        Customize
     }
 }

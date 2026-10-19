@@ -46,6 +46,9 @@ namespace JollyPanda.LastFlag.EnemyModule
         private int aliveEnemies = 0;
         private int totalEnemies = 0;
 
+        /// <summary>Enemies of the current wave that were already killed.</summary>
+        private int KilledCount => totalEnemies - aliveEnemies;
+
         private bool isPaused = false;
 
         public event WaveEventHandler OnWaveStart;
@@ -63,6 +66,7 @@ namespace JollyPanda.LastFlag.EnemyModule
         {
             Informant.OnLose += StopSpawning;
             Informant.OnStart += StartSpawningWave;
+            Informant.OnNextWave += StartNextWave;
             Informant.OnChangeUIPage += DestroyEnemies;
             Informant.OnPause += Informant_OnPause;
         }
@@ -71,6 +75,7 @@ namespace JollyPanda.LastFlag.EnemyModule
         {
             Informant.OnLose -= StopSpawning;
             Informant.OnStart -= StartSpawningWave;
+            Informant.OnNextWave -= StartNextWave;
             Informant.OnChangeUIPage -= DestroyEnemies;
             Informant.OnPause -= Informant_OnPause;
         }
@@ -127,6 +132,12 @@ namespace JollyPanda.LastFlag.EnemyModule
                 {
                     enemy.gameObject.SetActive(false);
                 }
+            }
+
+            // pooled enemies are inactive now, forget which ones were "on" a spawn point
+            foreach (var list in activeEnemiesPerPoint.Values)
+            {
+                list.Clear();
             }
         }
 
@@ -277,7 +288,8 @@ namespace JollyPanda.LastFlag.EnemyModule
         void SetEnemyBehavior(Enemy enemy)
         {
             enemy.SetClimbSpeed(Random.Range(currentWaveData.MinSpeed, currentWaveData.MaxSpeed));
-            enemy.SetHealth(Random.Range(currentWaveData.MinHealth, currentWaveData.MaxHealth));
+            // int Random.Range has an exclusive upper bound -> +1 so MaxHealth can be rolled
+            enemy.SetHealth(Random.Range(currentWaveData.MinHealth, currentWaveData.MaxHealth + 1));
             enemy.SetDeadAction((killedEnemy) =>
             {
                 aliveEnemies--;
@@ -291,7 +303,7 @@ namespace JollyPanda.LastFlag.EnemyModule
             });
             enemy.SetReachAction((reachedEnemy) =>
             {
-                Informant.NotifyEnemyReachedTop(reachedEnemy, Mathf.Abs(spawnedInWave - aliveEnemies));
+                Informant.NotifyEnemyReachedTop(reachedEnemy, KilledCount);
             });
         }
 
@@ -329,18 +341,18 @@ namespace JollyPanda.LastFlag.EnemyModule
         {
             DestroyEnemies();
 
+            if (waveDataGenerator == null)
+            {
+                Debug.LogError("EnemySpawner: waveDataGenerator is not assigned.", this);
+                return;
+            }
+
             int currentWaveIndex = SaveSystem.GetCurrentWaveIndex();
             currentWaveData = waveDataGenerator.GenerateWave(currentWaveIndex);
 
             if (currentWaveData.EnemyPrefabs == null || currentWaveData.EnemyPrefabs.Length == 0)
             {
                 Debug.LogError($"Generated wave {currentWaveIndex} has no enemy prefabs!");
-                return;
-            }
-
-            if (currentWaveData.EnemyPrefabs == null || currentWaveData.EnemyPrefabs.Length == 0)
-            {
-                Debug.LogError($"Wave {currentWaveIndex} has no enemy prefabs!");
                 return;
             }
 
@@ -358,6 +370,15 @@ namespace JollyPanda.LastFlag.EnemyModule
             Informant.NotifyEnemyKilled(aliveEnemies, totalEnemies);
         }
 
+        /// <summary>Next wave requested by the countdown popup. Ignored while a wave is running.</summary>
+        private void StartNextWave()
+        {
+            if (waveInProgress)
+                return;
+
+            StartSpawningWave();
+        }
+
         private void EndCurrentWave()
         {
             CancelInvoke(nameof(SpawnEnemy));
@@ -365,14 +386,13 @@ namespace JollyPanda.LastFlag.EnemyModule
 
             int waveIndex = SaveSystem.GetCurrentWaveIndex();
             OnWaveEnd?.Invoke(waveIndex);
-            Informant.NotifyFinishWave(waveIndex, Mathf.Abs(spawnedInWave - aliveEnemies));
-
-            Invoke(nameof(StartSpawningWave), currentWaveData.DelayAfterWave);
+            Informant.NotifyFinishWave(waveIndex, KilledCount);
+            // The next wave is started by CountdownPopup -> Informant.NotifyNextWave -> StartNextWave.
         }
 
         private void StopSpawning()
         {
-            CancelInvoke(nameof(SpawnEnemy));
+            CancelInvoke(); // SpawnEnemy and anything else still scheduled
             waveInProgress = false;
         }
 

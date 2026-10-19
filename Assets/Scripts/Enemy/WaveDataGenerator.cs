@@ -42,6 +42,12 @@ namespace JollyPanda.LastFlag.EnemyModule
 
         public WaveData GenerateWave(int level)
         {
+            if (allEnemies == null || allEnemies.Length == 0)
+            {
+                Debug.LogError("WaveDataGenerator: allEnemies is empty.", this);
+                return default; // EnemySpawner rejects a wave without EnemyPrefabs
+            }
+
             int enemyCount = Mathf.Clamp(minCount + level, minCount, maxCount);
 
             float minSpeed = Mathf.Clamp(baseSpeedMin * (1 + level * 0.1f), baseSpeedMin, 5f);
@@ -79,7 +85,8 @@ namespace JollyPanda.LastFlag.EnemyModule
 
             float reward = (avgHealth * healthFactor) + (avgSpeed * speedFactor) + (level * levelFactor);
 
-            return Mathf.RoundToInt(reward);
+            // never pay 0 coins for a kill
+            return Mathf.Max(1, Mathf.RoundToInt(reward));
         }
     }
 }

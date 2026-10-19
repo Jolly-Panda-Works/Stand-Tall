@@ -13,6 +13,10 @@ public class HomePage : UIPage
     [Header("Buttons")] 
     [SerializeField] private Button settingButton;
     [SerializeField] private Button upgradeButton;
+    [Tooltip("Optional. Opens the shop popup.")]
+    [SerializeField] private Button shopButton;
+    [Tooltip("Optional. Opens the customize popup.")]
+    [SerializeField] private Button customizeButton;
 
     [Header("Dragging")] 
     //private bool isGameStarted;
@@ -38,15 +42,20 @@ public class HomePage : UIPage
 
     public override void OnSetValues()
     {
-        settingButton.onClick.RemoveAllListeners();
-        settingButton.onClick.AddListener(SettingButtonClicked);
-
-        upgradeButton.onClick.RemoveAllListeners();
-        upgradeButton.onClick.AddListener(UpgradeButtonClicked);
+        // Listeners are added once in OnAwake. RemoveAllListeners here would also remove
+        // the click sound that UIButtonSound registered on the same buttons.
     }
 
     public override void OnAwake()
     {
+        settingButton.onClick.AddListener(SettingButtonClicked);
+        upgradeButton.onClick.AddListener(UpgradeButtonClicked);
+
+        if (shopButton != null)
+            shopButton.onClick.AddListener(ShopButtonClicked);
+
+        if (customizeButton != null)
+            customizeButton.onClick.AddListener(CustomizeButtonClicked);
     }
 
     private void Awake() => Input.simulateMouseWithTouches = true;
@@ -107,6 +116,16 @@ public class HomePage : UIPage
     private void UpgradeButtonClicked()
     {
         UIManager.instance.OpenPopup(PopupType.Upgrade);
+    }
+
+    private void ShopButtonClicked()
+    {
+        UIManager.instance.OpenPopup(PopupType.Shop);
+    }
+
+    private void CustomizeButtonClicked()
+    {
+        UIManager.instance.OpenPopup(PopupType.Customize);
     }
 
     private void SettingButtonClicked()

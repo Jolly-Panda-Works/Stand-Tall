@@ -10,13 +10,20 @@ namespace USound
     [RequireComponent(typeof(SoundEventsListener))]
     public class SoundManager : MonoBehaviour
     {
+        /// <summary>Safe to read during shutdown (does not search the scene or log an error).</summary>
+        public static bool HasInstance => _instance != null;
+
         public static SoundManager Instance
         {
             get
             {
                 if (_instance == null)
                 {
+#if UNITY_2023_1_OR_NEWER
+                    _instance = FindFirstObjectByType<SoundManager>();
+#else
                     _instance = FindObjectOfType<SoundManager>();
+#endif
 
                     if (_instance == null)
                     {
@@ -45,17 +52,20 @@ namespace USound
 
         private SoundTag currentBG;
         private SoundTag nextBG;
+        private Coroutine fadeRoutine;
 
         private readonly List<SoundTag> registeredSounds = new();
 
         private void Awake()
         {
-            if (Instance != null && Instance != this)
+            // use the field, not the getter (the getter searches the scene and logs an error)
+            if (_instance != null && _instance != this)
             {
                 Destroy(gameObject);
                 return;
             }
 
+            _instance = this;
             DontDestroyOnLoad(gameObject);
 
             backgroundVolume = SaveSystem.GetBackgroundVolume();
@@ -116,21 +126,32 @@ namespace USound
             if (newBackground == currentBG)
                 return;
 
+            // only ONE background fade may run: a second one would Stop() a source
+            // that the first one is still fading in
+            if (fadeRoutine != null)
+                StopCoroutine(fadeRoutine);
+
+            var previous = currentBG;
             nextBG = newBackground;
+            currentBG = newBackground;
+
+            // every background source that is neither the old nor the new one must be silent
+            foreach (var tag in new[] { homeAudioClip, gameAudioClip, splashAudioClip })
+            {
+                if (tag != null && tag != previous && tag != newBackground)
+                    tag.GetAudioSource().Stop();
+            }
+
             var nextSource = nextBG.GetAudioSource();
-            nextSource.volume = 0f;
-            nextSource.Play();
-
-            if (currentBG != null)
+            if (!nextSource.isPlaying)
             {
-                StartCoroutine(FadeOutIn(currentBG, nextBG));
-            }
-            else
-            {
-                StartCoroutine(FadeInOnly(nextBG));
+                nextSource.volume = 0f;
+                nextSource.Play();
             }
 
-            currentBG = nextBG;
+            fadeRoutine = previous != null
+                ? StartCoroutine(FadeOutIn(previous, nextBG))
+                : StartCoroutine(FadeInOnly(nextBG));
         }
 
         private IEnumerator FadeOutIn(SoundTag fromTag, SoundTag toTag)

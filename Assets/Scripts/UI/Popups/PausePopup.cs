@@ -37,8 +37,7 @@ public class PausePopup : UIPopup
     private void QuitButtonClicked()
     {
         GameManager.instance.UnPauseGame();
-        GameManager.instance.BackHome();
-        UIManager.instance.OpenPage(PageType.Home);
+        GameManager.instance.BackHome(); // BackHome already opens the Home page
     }
     private void ResumeButtonClicked()
     {
@@ -47,8 +46,7 @@ public class PausePopup : UIPopup
     }
     private void RestartButtonClicked()
     {
-        //GameManager.instance.UnPauseGame();
-        //GameManager.instance.BackHome();
-        //UIManager.instance.OpenPage(PageType.Home);
+        GameManager.instance.UnPauseGame();
+        GameManager.instance.RestartCurrentWave();
     }
 }

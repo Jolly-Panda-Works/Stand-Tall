@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JollyPanda.LastFlag.Database;
 using UnityEngine;
 using ULanguage.SharedTypes;
 using ULanguage.Data;
@@ -29,6 +30,8 @@ namespace ULanguage.Data
 
 namespace ULanguage
 {
+    // Must run before every LocalizedText/LocalizedImage Awake (they read CurrentLanguage).
+    [DefaultExecutionOrder(-200)]
     internal class LanguageManager : MonoBehaviour
     {
         public static LanguageManager Instance { get; private set; }
@@ -48,7 +51,7 @@ namespace ULanguage
 
         private Dictionary<string, LanguageEntry> translationDict = new();
 
-        public static LanguageType CurrentLanguage => Instance.currentLanguage;
+        public static LanguageType CurrentLanguage => Instance != null ? Instance.currentLanguage : LanguageType.English;
 
         private void Awake()
         {
@@ -60,6 +63,18 @@ namespace ULanguage
 
             Instance = this;
             DontDestroyOnLoad(gameObject);
+
+            // saved language, or on the very first launch the phone language
+            int saved = SaveSystem.GetLanguageIndex();
+            if (saved < 0 || !Enum.IsDefined(typeof(LanguageType), saved))
+            {
+                // Unity's SystemLanguage enum has no Persian, so read the device culture ("fa", "fa-IR", ...)
+                string iso = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+                saved = string.Equals(iso, "fa", StringComparison.OrdinalIgnoreCase)
+                    ? (int)LanguageType.Persian
+                    : (int)LanguageType.English;
+            }
+            currentLanguage = (LanguageType)saved;
 
             foreach (var entry in translations)
             {
@@ -73,6 +88,7 @@ namespace ULanguage
             if (currentLanguage == newLanguage) return;
 
             currentLanguage = newLanguage;
+            SaveSystem.UpdateLanguageIndex((int)newLanguage);
             OnLanguageChanged?.Invoke(currentLanguage);
         }
 

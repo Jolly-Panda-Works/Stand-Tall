@@ -15,9 +15,13 @@ namespace JollyPanda.LastFlag.EnemyModule
         [Tooltip("Reference to the health slider UI.")]
         public Slider healthSlider;
 
+        /// <summary>False once the enemy started falling (dead). Bullets pass through dead enemies.</summary>
+        public bool IsAlive => !isFalling;
+
         public event Action<int> OnHealthChange;
         public event Action OnDead;
-        public event Action OnRevive;
+        [Obsolete("No longer raised. Enemy starts climbing from its own OnEnable.")]
+        public event Action OnRevive { add { } remove { } }
 
         private void Awake()
         {
@@ -30,7 +34,6 @@ namespace JollyPanda.LastFlag.EnemyModule
             isFalling = false;
             SetHealth(maxHealth);
             ShowHealthBar(true);
-            OnRevive?.Invoke();
         }
 
         internal void SetMaxHealth(int value)

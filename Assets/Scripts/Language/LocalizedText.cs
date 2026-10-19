@@ -29,6 +29,9 @@ namespace ULanguage.Components
 
         private void UpdateText(LanguageType language)
         {
+            if (LanguageManager.Instance == null)
+                return;
+
             string localizedText = LanguageManager.Instance.GetLocalizedText(translationKey);
 
             if (tmpText != null)

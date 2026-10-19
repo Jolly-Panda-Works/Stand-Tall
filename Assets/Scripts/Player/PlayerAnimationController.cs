@@ -13,24 +13,52 @@ namespace JollyPanda.LastFlag.PlayerModule
         [SerializeField] private string idle = "Idle";
         [SerializeField] private string fire = "Fire";
 
+        /// <summary>Customize: the character model changed, drive the new model's Animator from now on.</summary>
+        public void SetAnimator(Animator newAnimator)
+        {
+            if (newAnimator != null)
+                animator = newAnimator;
+        }
+
+        // Hashed parameter names are faster than strings. Built lazily so the
+        // inspector values are used even if they were changed after Awake.
+        private int defeatHash, victoryHash, idleHash, fireHash;
+        private bool hashesReady;
+
+        private void EnsureHashes()
+        {
+            if (hashesReady)
+                return;
+
+            defeatHash = Animator.StringToHash(defeat);
+            victoryHash = Animator.StringToHash(victory);
+            idleHash = Animator.StringToHash(idle);
+            fireHash = Animator.StringToHash(fire);
+            hashesReady = true;
+        }
+
         public void PlayDefeat()
         {
-            animator.Play(defeat);
+            EnsureHashes();
+            animator.Play(defeatHash);
         }
 
         public void PlayVictory()
         {
-            animator.SetTrigger(victory);
+            EnsureHashes();
+            animator.SetTrigger(victoryHash);
         }
 
         public void PlayIdle()
         {
-            animator.SetTrigger(idle);
+            EnsureHashes();
+            animator.SetTrigger(idleHash);
         }
 
         public void PlayShooting(bool shooting)
         {
-            animator.SetBool(fire, shooting);
+            EnsureHashes();
+            animator.SetBool(fireHash, shooting);
         }
 
         internal void Pause()

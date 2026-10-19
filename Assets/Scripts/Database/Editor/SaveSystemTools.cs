@@ -1,7 +1,7 @@
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 
-#if UNITY_EDITOR
 public static class SaveSystemTools
 {
     [MenuItem("Tools/Player/Add 1000 Money")]
