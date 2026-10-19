@@ -1,0 +1,190 @@
+# Builds the Android APK on every push, gives it a new version and publishes it as a GitHub Release.
+#
+#   version      = <major>.<minor> from ProjectSettings (bundleVersion) + "." + run number   e.g. 1.0.37
+#   versionCode  = VERSION_CODE_BASE + run number (always increases, as Google Play requires)
+#   main branch  -> normal release      (tag v1.0.37)
+#   other branch -> pre-release         (tag v1.0.37-<branch>)
+#
+# Required repository secrets (see .github/CI_SETUP_FA.md, or run tools/ci/set-github-secrets.ps1):
+#   UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD
+#   ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASS, ANDROID_KEYALIAS_NAME, ANDROID_KEYALIAS_PASS
+
+name: Android Build & Release
+
+on:
+  push:
+    branches: ['**']
+    paths-ignore:
+      - '**.md'
+      - '.github/CI_SETUP_FA.md'
+      - 'tools/ci/**'
+  workflow_dispatch:
+    inputs:
+      appBundle:
+        description: 'Also build an .aab for Google Play'
+        type: boolean
+        default: false
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+env:
+  VERSION_CODE_BASE: 100
+  BUILD_NAME: StandTall
+
+jobs:
+  version:
+    name: Compute version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+      code: ${{ steps.v.outputs.code }}
+      tag: ${{ steps.v.outputs.tag }}
+      prerelease: ${{ steps.v.outputs.prerelease }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: ProjectSettings/ProjectSettings.asset
+          sparse-checkout-cone-mode: false
+
+      - id: v
+        shell: bash
+        run: |
+          base=$(grep -m1 'bundleVersion:' ProjectSettings/ProjectSettings.asset | awk '{print $2}')
+          major=$(echo "$base" | cut -d. -f1); minor=$(echo "$base" | cut -d. -f2)
+          version="${major:-1}.${minor:-0}.${GITHUB_RUN_NUMBER}"
+          code=$(( VERSION_CODE_BASE + GITHUB_RUN_NUMBER ))
+          branch="${GITHUB_REF_NAME}"
+          if [ "$branch" = "main" ]; then
+            tag="v${version}"; prerelease=false
+          else
+            slug=$(echo "$branch" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g; s/--*/-/g; s/^-//; s/-$//')
+            tag="v${version}-${slug}"; prerelease=true
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "prerelease=$prerelease" >> "$GITHUB_OUTPUT"
+          echo "### Version $version (code $code) → $tag" >> "$GITHUB_STEP_SUMMARY"
+
+  build:
+    name: Build Android (${{ matrix.exportType }})
+    needs: version
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    strategy:
+      fail-fast: true
+      matrix:
+        exportType: ${{ fromJSON(github.event.inputs.appBundle == 'true' && '["androidPackage","androidAppBundle"]' || '["androidPackage"]') }}
+    steps:
+      - name: Check secrets
+        shell: bash
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+          ANDROID_KEYALIAS_NAME: ${{ secrets.ANDROID_KEYALIAS_NAME }}
+          ANDROID_KEYALIAS_PASS: ${{ secrets.ANDROID_KEYALIAS_PASS }}
+        run: |
+          missing=0
+          for s in UNITY_LICENSE UNITY_EMAIL UNITY_PASSWORD ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASS ANDROID_KEYALIAS_NAME ANDROID_KEYALIAS_PASS; do
+            if [ -z "${!s}" ]; then echo "::error::Missing repository secret $s (see .github/CI_SETUP_FA.md)"; missing=1; fi
+          done
+          exit $missing
+
+      # the Unity Android image (~8 GB) + Library do not fit on a default runner
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@v2.0.0
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: false
+          docker-images: true
+          swap-storage: false
+
+      - uses: actions/checkout@v7
+        with:
+          lfs: true
+
+      - name: Cache Library
+        uses: actions/cache@v6
+        with:
+          path: Library
+          key: Library-Android-${{ hashFiles('Packages/packages-lock.json', 'ProjectSettings/ProjectVersion.txt') }}-${{ github.sha }}
+          restore-keys: |
+            Library-Android-${{ hashFiles('Packages/packages-lock.json', 'ProjectSettings/ProjectVersion.txt') }}-
+            Library-Android-
+
+      - name: Build with Unity
+        uses: game-ci/unity-builder@v6
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: Android
+          buildName: ${{ env.BUILD_NAME }}
+          versioning: Custom
+          version: ${{ needs.version.outputs.version }}
+          androidVersionCode: ${{ needs.version.outputs.code }}
+          androidExportType: ${{ matrix.exportType }}
+          androidKeystoreName: user.keystore
+          androidKeystoreBase64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          androidKeystorePass: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+          androidKeyaliasName: ${{ secrets.ANDROID_KEYALIAS_NAME }}
+          androidKeyaliasPass: ${{ secrets.ANDROID_KEYALIAS_PASS }}
+          # the editor rewrites some ProjectSettings/UserSettings files while importing
+          buildsPath: build
+          allowDirtyBuild: true
+
+      - name: Rename output
+        id: out
+        shell: bash
+        run: |
+          sudo chown -R "$(id -u):$(id -g)" build || true
+          ext=apk; [ "${{ matrix.exportType }}" = "androidAppBundle" ] && ext=aab
+          src=$(find build -name "*.${ext}" -not -path "*/Library/*" | head -n1)
+          if [ -z "$src" ]; then echo "::error::No .${ext} produced"; ls -R build || true; exit 1; fi
+          dst="build/${BUILD_NAME}-${{ needs.version.outputs.version }}.${ext}"
+          mv "$src" "$dst"
+          echo "file=$dst" >> "$GITHUB_OUTPUT"
+          echo "ext=$ext" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.BUILD_NAME }}-${{ needs.version.outputs.version }}-${{ steps.out.outputs.ext }}
+          path: ${{ steps.out.outputs.file }}
+          retention-days: 14
+
+  release:
+    name: Publish GitHub Release
+    needs: [version, build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: dist
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ needs.version.outputs.tag }}
+          name: ${{ env.BUILD_NAME }} ${{ needs.version.outputs.version }}${{ needs.version.outputs.prerelease == 'true' && format(' ({0})', github.ref_name) || '' }}
+          target_commitish: ${{ github.sha }}
+          prerelease: ${{ needs.version.outputs.prerelease == 'true' }}
+          generate_release_notes: true
+          body: |
+            **Version:** ${{ needs.version.outputs.version }} (versionCode ${{ needs.version.outputs.code }})
+            **Branch:** `${{ github.ref_name }}` · **Commit:** ${{ github.sha }}
+
+            ${{ github.event.head_commit.message }}
+          files: dist/*
+          fail_on_unmatched_files: true
