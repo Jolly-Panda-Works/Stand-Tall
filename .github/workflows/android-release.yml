@@ -6,7 +6,7 @@
 #   other branch -> pre-release         (tag v1.0.37-<branch>)
 #
 # Required repository secrets (see .github/CI_SETUP_FA.md, or run tools/ci/set-github-secrets.ps1):
-#   UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD
+#   UNITY_EMAIL, UNITY_PASSWORD (Unity ID login with a password, no 2FA); UNITY_LICENSE optional
 #   ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASS, ANDROID_KEYALIAS_NAME, ANDROID_KEYALIAS_PASS
 
 name: Android Build & Release
@@ -93,7 +93,9 @@ jobs:
           ANDROID_KEYALIAS_PASS: ${{ secrets.ANDROID_KEYALIAS_PASS }}
         run: |
           missing=0
-          for s in UNITY_LICENSE UNITY_EMAIL UNITY_PASSWORD ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASS ANDROID_KEYALIAS_NAME ANDROID_KEYALIAS_PASS; do
+          # UNITY_LICENSE is optional: a .ulf from another PC is machine-bound, so Personal licenses
+          # are activated with UNITY_EMAIL / UNITY_PASSWORD on the runner.
+          for s in UNITY_EMAIL UNITY_PASSWORD ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASS ANDROID_KEYALIAS_NAME ANDROID_KEYALIAS_PASS; do
             if [ -z "${!s}" ]; then echo "::error::Missing repository secret $s (see .github/CI_SETUP_FA.md)"; missing=1; fi
           done
           exit $missing

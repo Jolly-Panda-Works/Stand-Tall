@@ -4,7 +4,7 @@
 # Passwords are typed into hidden prompts and sent straight to GitHub; nothing is written to disk.
 
 param(
-    [string]$Repo = "Jolly-Panda-Works/Last-Flag",
+    [string]$Repo = "Jolly-Panda-Works/Stand-Tall",
     [string]$KeystorePath = "F:\Jolly Panda Studio\Mobile Games\com.jollypanda.standtall.keystore",
     [string]$LicensePath = "C:\ProgramData\Unity\Unity_lic.ulf"
 )

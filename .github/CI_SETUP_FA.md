@@ -39,7 +39,13 @@ powershell -ExecutionPolicy Bypass -File tools/ci/set-github-secrets.ps1
 | `ANDROID_KEYALIAS_NAME` | نام alias (در Player Settings > Publishing Settings) |
 | `ANDROID_KEYALIAS_PASS` | رمز alias |
 
-> اکانت Unity نباید ورود دو مرحله‌ای (2FA) داشته باشد، وگرنه فعال‌سازی لایسنس روی سرور شکست می‌خورد.
+> **لایسنس Unity روی سرور:** فایل `Unity_lic.ulf` به همان کامپیوتر قفل است و روی سرور GitHub کار نمی‌کند (`Machine bindings don't match`)، پس لایسنس با `UNITY_EMAIL` و `UNITY_PASSWORD` فعال می‌شود و `UNITY_LICENSE` اختیاری است. برای همین:
+> - اکانت باید **رمز عبور Unity ID** داشته باشد. اگر با Google/Apple/Facebook وارد Unity می‌شوید، در id.unity.com یک رمز برای اکانت بسازید و همان را در `UNITY_PASSWORD` بگذارید.
+> - ورود دو مرحله‌ای (2FA) خاموش باشد.
+> - اگر Unity ایمیل «ورود از دستگاه جدید» فرستاد، آن را تأیید کنید و workflow را دوباره اجرا کنید.
+> - پیشنهاد: یک اکانت Unity جدا فقط برای CI بسازید.
+>
+> خطای `Invalid Credential (143.002)` یعنی یکی از موارد بالا درست نیست.
 
 ## نکته‌ها
 
