@@ -1,7 +1,6 @@
 using System;
 using TMPro;
 using ULanguage;
-using ULanguage.SharedTypes;
 
 namespace JollyPanda.LastFlag.Shop
 {
@@ -32,8 +31,7 @@ namespace JollyPanda.LastFlag.Shop
 
     /// <summary>
     /// Tiny bridge to the existing ULanguage system. It keeps all shop strings in code
-    /// (English + Persian), so no new LanguageEntry assets are needed, and it reuses the
-    /// current language and TMP font chosen by LanguageManager.
+    /// (English only, like the rest of the UI) and reuses the TMP font chosen by LanguageManager.
     /// </summary>
     public static class ShopLocale
     {
@@ -44,34 +42,30 @@ namespace JollyPanda.LastFlag.Shop
             LanguageManager.OnLanguageChanged += _ => LanguageChanged?.Invoke();
         }
 
-        public static bool IsPersian =>
-            LanguageManager.Instance != null && LanguageManager.CurrentLanguage == LanguageType.Persian;
-
         public static string Get(ShopText key)
         {
-            bool fa = IsPersian;
             switch (key)
             {
-                case ShopText.Shop: return fa ? "فروشگاه" : "Shop";
-                case ShopText.Customize: return fa ? "شخصی‌سازی" : "Customize";
-                case ShopText.Buy: return fa ? "خرید" : "Buy";
-                case ShopText.Owned: return fa ? "خریداری شده" : "Owned";
-                case ShopText.Equip: return fa ? "انتخاب" : "Equip";
-                case ShopText.Equipped: return fa ? "انتخاب شده" : "Equipped";
-                case ShopText.Free: return fa ? "رایگان" : "Free";
-                case ShopText.NotEnoughCoins: return fa ? "سکه کافی نیست" : "Not enough coins";
-                case ShopText.PurchaseSuccess: return fa ? "خرید انجام شد" : "Purchase complete";
-                case ShopText.PurchaseFailed: return fa ? "خرید ناموفق بود" : "Purchase failed";
-                case ShopText.Unavailable: return fa ? "در دسترس نیست" : "Unavailable";
-                case ShopText.Coins: return fa ? "سکه" : "Coins";
-                case ShopText.Guns: return fa ? "اسلحه" : "Guns";
-                case ShopText.Skins: return fa ? "اسکین" : "Skins";
-                case ShopText.Characters: return fa ? "کاراکتر" : "Characters";
-                case ShopText.Bullets: return fa ? "تیر" : "Bullets";
-                case ShopText.EmptyList: return fa ? "موردی وجود ندارد" : "Nothing here yet";
-                case ShopText.DefaultSkin: return fa ? "پیش‌فرض" : "Default";
-                case ShopText.FreeCoins: return fa ? "سکه رایگان" : "Free coins";
-                case ShopText.DoubleReward: return fa ? "دو برابر" : "x2 coins";
+                case ShopText.Shop: return "Shop";
+                case ShopText.Customize: return "Customize";
+                case ShopText.Buy: return "Buy";
+                case ShopText.Owned: return "Owned";
+                case ShopText.Equip: return "Equip";
+                case ShopText.Equipped: return "Equipped";
+                case ShopText.Free: return "Free";
+                case ShopText.NotEnoughCoins: return "Not enough coins";
+                case ShopText.PurchaseSuccess: return "Purchase complete";
+                case ShopText.PurchaseFailed: return "Purchase failed";
+                case ShopText.Unavailable: return "Unavailable";
+                case ShopText.Coins: return "Coins";
+                case ShopText.Guns: return "Guns";
+                case ShopText.Skins: return "Skins";
+                case ShopText.Characters: return "Characters";
+                case ShopText.Bullets: return "Bullets";
+                case ShopText.EmptyList: return "Nothing here yet";
+                case ShopText.DefaultSkin: return "Default";
+                case ShopText.FreeCoins: return "Free coins";
+                case ShopText.DoubleReward: return "x2 coins";
                 default: return key.ToString();
             }
         }
@@ -81,13 +75,7 @@ namespace JollyPanda.LastFlag.Shop
             if (item == null)
                 return string.Empty;
 
-            string localized = IsPersian ? item.NamePersian : item.NameEnglish;
-            if (!string.IsNullOrEmpty(localized))
-                return localized;
-
-            // fall back to the other language, then to the asset id
-            string other = IsPersian ? item.NameEnglish : item.NamePersian;
-            return !string.IsNullOrEmpty(other) ? other : item.Id;
+            return !string.IsNullOrEmpty(item.NameEnglish) ? item.NameEnglish : item.Id;
         }
 
         public static string GetCategoryName(ShopCategory category)

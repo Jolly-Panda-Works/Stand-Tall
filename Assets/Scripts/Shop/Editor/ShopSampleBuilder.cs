@@ -29,24 +29,24 @@ namespace JollyPanda.LastFlag.Shop.EditorTools
             // ---- characters (variantId must match CharacterVariant.VariantId in the scene)
             items.Add(Make<CharacterItemData>("Character_Default", so =>
             {
-                Set(so, "id", "char_default"); Set(so, "nameEnglish", "Default"); Set(so, "namePersian", "پیش‌فرض");
+                Set(so, "id", "char_default"); Set(so, "nameEnglish", "Default");
                 Set(so, "isDefault", true); Set(so, "sortOrder", 0); Set(so, "variantId", "default");
             }));
             items.Add(Make<CharacterItemData>("Character_Hero2", so =>
             {
-                Set(so, "id", "char_hero2"); Set(so, "nameEnglish", "Hero 2"); Set(so, "namePersian", "قهرمان ۲");
+                Set(so, "id", "char_hero2"); Set(so, "nameEnglish", "Hero 2");
                 Set(so, "price", 500); Set(so, "sortOrder", 1); Set(so, "variantId", "hero2");
             }));
 
             // ---- guns (gunId must match Gun.Id inside GunSelector)
             items.Add(Make<GunItemData>("Gun_0", so =>
             {
-                Set(so, "id", "gun_0"); Set(so, "nameEnglish", "Starter Gun"); Set(so, "namePersian", "اسلحه اولیه");
+                Set(so, "id", "gun_0"); Set(so, "nameEnglish", "Starter Gun");
                 Set(so, "isDefault", true); Set(so, "sortOrder", 0); Set(so, "gunId", 0);
             }));
             items.Add(Make<GunItemData>("Gun_1", so =>
             {
-                Set(so, "id", "gun_1"); Set(so, "nameEnglish", "Gun 2"); Set(so, "namePersian", "اسلحه ۲");
+                Set(so, "id", "gun_1"); Set(so, "nameEnglish", "Gun 2");
                 Set(so, "price", 400); Set(so, "sortOrder", 1); Set(so, "gunId", 1);
             }));
 
@@ -56,12 +56,12 @@ namespace JollyPanda.LastFlag.Shop.EditorTools
                 int g = gun;
                 items.Add(Make<GunSkinItemData>($"GunSkin_{g}_Default", so =>
                 {
-                    Set(so, "id", $"skin_{g}_default"); Set(so, "nameEnglish", "Default"); Set(so, "namePersian", "پیش‌فرض");
+                    Set(so, "id", $"skin_{g}_default"); Set(so, "nameEnglish", "Default");
                     Set(so, "isDefault", true); Set(so, "sortOrder", 0); Set(so, "gunId", g);
                 }));
                 items.Add(Make<GunSkinItemData>($"GunSkin_{g}_Gold", so =>
                 {
-                    Set(so, "id", $"skin_{g}_gold"); Set(so, "nameEnglish", "Gold"); Set(so, "namePersian", "طلایی");
+                    Set(so, "id", $"skin_{g}_gold"); Set(so, "nameEnglish", "Gold");
                     Set(so, "price", 150); Set(so, "sortOrder", 1); Set(so, "gunId", g);
                     // assign the real skin Material in the inspector
                 }));
@@ -70,20 +70,20 @@ namespace JollyPanda.LastFlag.Shop.EditorTools
             // ---- bullets (empty prefab = each gun's own bullet)
             items.Add(Make<BulletItemData>("Bullet_Default", so =>
             {
-                Set(so, "id", "bullet_default"); Set(so, "nameEnglish", "Default"); Set(so, "namePersian", "پیش‌فرض");
+                Set(so, "id", "bullet_default"); Set(so, "nameEnglish", "Default");
                 Set(so, "isDefault", true); Set(so, "sortOrder", 0);
             }));
             items.Add(Make<BulletItemData>("Bullet_Fire", so =>
             {
-                Set(so, "id", "bullet_fire"); Set(so, "nameEnglish", "Fire Bullet"); Set(so, "namePersian", "گلولهٔ آتشین");
+                Set(so, "id", "bullet_fire"); Set(so, "nameEnglish", "Fire Bullet");
                 Set(so, "price", 250); Set(so, "sortOrder", 1);
                 // assign a bullet prefab (with a Bullet component) in the inspector
             }));
 
             // ---- coin packs (productId = SKU you create in the store console)
-            items.Add(MakePack("CoinPack_Small", "coins_500", 500, "۲۹٬۰۰۰ تومان", 0));
-            items.Add(MakePack("CoinPack_Medium", "coins_1500", 1500, "۷۹٬۰۰۰ تومان", 1));
-            items.Add(MakePack("CoinPack_Large", "coins_4000", 4000, "۱۶۹٬۰۰۰ تومان", 2));
+            items.Add(MakePack("CoinPack_Small", "coins_500", 500, "29,000 Toman", 0));
+            items.Add(MakePack("CoinPack_Medium", "coins_1500", 1500, "79,000 Toman", 1));
+            items.Add(MakePack("CoinPack_Large", "coins_4000", 4000, "169,000 Toman", 2));
 
             // ---- catalog
             string catalogPath = $"{Folder}/ShopCatalog.asset";
@@ -119,7 +119,6 @@ namespace JollyPanda.LastFlag.Shop.EditorTools
             {
                 Set(so, "id", assetName.ToLowerInvariant());
                 Set(so, "nameEnglish", $"{coins} Coins");
-                Set(so, "namePersian", $"{coins} سکه");
                 Set(so, "sortOrder", order);
                 Set(so, "coinAmount", coins);
                 Set(so, "productId", productId);

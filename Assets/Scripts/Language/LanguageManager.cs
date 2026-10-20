@@ -38,6 +38,9 @@ namespace ULanguage
 
         public static event Action<LanguageType> OnLanguageChanged;
 
+        /// <summary>The game ships in English only: the saved/device language is ignored and SetLanguage only accepts English.</summary>
+        public const bool EnglishOnly = true;
+
         [Header("Language Settings")]
         [SerializeField] private LanguageType currentLanguage = LanguageType.English;
         [SerializeField] private List<LanguageEntry> translations;
@@ -74,7 +77,7 @@ namespace ULanguage
                     ? (int)LanguageType.Persian
                     : (int)LanguageType.English;
             }
-            currentLanguage = (LanguageType)saved;
+            currentLanguage = EnglishOnly ? LanguageType.English : (LanguageType)saved;
 
             foreach (var entry in translations)
             {
@@ -85,6 +88,9 @@ namespace ULanguage
 
         public void SetLanguage(LanguageType newLanguage)
         {
+            if (EnglishOnly)
+                newLanguage = LanguageType.English;
+
             if (currentLanguage == newLanguage) return;
 
             currentLanguage = newLanguage;

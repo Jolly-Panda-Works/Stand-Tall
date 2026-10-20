@@ -13,25 +13,21 @@ namespace JollyPanda.LastFlag.Localization
     }
 
     /// <summary>
-    /// Code-based English/Persian strings for the gameplay UI (same approach as ShopLocale), so no new
-    /// LanguageEntry assets are needed. It follows the language and TMP font chosen in LanguageManager.
+    /// Code-based strings for the gameplay UI (same approach as ShopLocale), so no new
+    /// LanguageEntry assets are needed. The game UI is English only.
     /// </summary>
     public static class GameLocale
     {
-        public static bool IsPersian =>
-            LanguageManager.Instance != null && LanguageManager.CurrentLanguage == LanguageType.Persian;
-
         public static string Get(GameText key)
         {
-            bool fa = IsPersian;
             switch (key)
             {
                 case GameText.WaveStarted:
-                    return fa ? "دشمنان بالا می‌آیند!\nموج {0} شروع شد!" : "Enemies rise!\nWave {0} has begun!";
+                    return "Enemies rise!\nWave {0} has begun!";
                 case GameText.MaxLevel:
-                    return fa ? "حداکثر" : "MAX";
+                    return "MAX";
                 case GameText.SecondsSuffix:
-                    return fa ? "{0} ثانیه" : "{0}s";
+                    return "{0}s";
                 default:
                     return key.ToString();
             }

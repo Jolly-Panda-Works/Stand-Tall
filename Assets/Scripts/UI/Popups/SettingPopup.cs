@@ -31,6 +31,8 @@ namespace MJUtilities.UI
         public override void OnAwake()
         {
             languageButton.onClick.AddListener(ClickOnLanguage);
+            // English only: there is nothing to choose
+            languageButton.gameObject.SetActive(!ULanguage.LanguageManager.EnglishOnly);
 
             webButton.onClick.AddListener(ClickOnWeb);
 
