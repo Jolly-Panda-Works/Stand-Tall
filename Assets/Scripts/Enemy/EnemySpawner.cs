@@ -64,7 +64,7 @@ namespace JollyPanda.LastFlag.EnemyModule
 
         private void OnEnable()
         {
-            Informant.OnLose += StopSpawning;
+            Informant.OnLose += OnLose;
             Informant.OnStart += StartSpawningWave;
             Informant.OnNextWave += StartNextWave;
             Informant.OnChangeUIPage += DestroyEnemies;
@@ -73,7 +73,7 @@ namespace JollyPanda.LastFlag.EnemyModule
 
         private void OnDisable()
         {
-            Informant.OnLose -= StopSpawning;
+            Informant.OnLose -= OnLose;
             Informant.OnStart -= StartSpawningWave;
             Informant.OnNextWave -= StartNextWave;
             Informant.OnChangeUIPage -= DestroyEnemies;
@@ -116,12 +116,47 @@ namespace JollyPanda.LastFlag.EnemyModule
                 DestroyEnemies();
 
                 StopSpawning();
+                HideAllRopes();
+                return;
             }
 
+            ShrinkAllRopes();
+        }
+
+        private void OnLose()
+        {
+            StopSpawning();
+            ShrinkAllRopes(); // the game is over: no rope may stay hanging on the tower
+        }
+
+        private void ShrinkAllRopes()
+        {
             foreach (var rope in ropeGrowers)
             {
-                rope?.Shrink();
+                if (rope != null)
+                    rope.Shrink();
             }
+        }
+
+        private void HideAllRopes()
+        {
+            foreach (var rope in ropeGrowers)
+            {
+                if (rope != null)
+                    rope.Hide();
+            }
+        }
+
+        /// <summary>Drops the rope of a spawn point once no living enemy uses it anymore.</summary>
+        private void ReleaseRope(int spawnIndex)
+        {
+            if (spawnIndex < 0 || spawnIndex >= ropeGrowers.Length)
+                return;
+
+            if (activeEnemiesPerPoint.TryGetValue(spawnIndex, out var list) && list.Count > 0)
+                return;
+
+            ropeGrowers[spawnIndex].Shrink();
         }
 
         private void DestroyEnemies()
@@ -294,6 +329,7 @@ namespace JollyPanda.LastFlag.EnemyModule
             {
                 aliveEnemies--;
                 activeEnemiesPerPoint[killedEnemy.CurrentSpawnIndex].Remove(killedEnemy);
+                ReleaseRope(killedEnemy.CurrentSpawnIndex); // the rope falls together with its enemy
 
                 if (aliveEnemies <= 0 && waveInProgress)
                 {
@@ -340,6 +376,7 @@ namespace JollyPanda.LastFlag.EnemyModule
         private void StartSpawningWave()
         {
             DestroyEnemies();
+            HideAllRopes(); // nothing from the previous wave or game may stay visible
 
             if (waveDataGenerator == null)
             {
@@ -385,6 +422,7 @@ namespace JollyPanda.LastFlag.EnemyModule
             waveInProgress = false;
 
             int waveIndex = SaveSystem.GetCurrentWaveIndex();
+            ShrinkAllRopes();
             OnWaveEnd?.Invoke(waveIndex);
             Informant.NotifyFinishWave(waveIndex, KilledCount);
             // The next wave is started by CountdownPopup -> Informant.NotifyNextWave -> StartNextWave.
