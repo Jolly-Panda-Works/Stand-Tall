@@ -14,11 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::JollyPanda.LastFlag.Shop.CoinPackData
   id: coinpack_large
   nameEnglish: 4000 Coins
-  namePersian: "4000 \u0633\u06A9\u0647"
   icon: {fileID: 0}
   price: 0
   isDefault: 0
   sortOrder: 2
   coinAmount: 4000
   productId: coins_4000
-  fallbackPriceText: "\u06F1\u06F6\u06F9\u066C\u06F0\u06F0\u06F0 \u062A\u0648\u0645\u0627\u0646"
+  fallbackPriceText: 169,000 Toman

@@ -37,6 +37,10 @@ namespace JollyPanda.LastFlag.Shop.EditorTools
         private const string CustomizePopupPrefabPath = UiPrefabFolder + "/Popup_Customize.prefab";
         private const string Hero2ModelPath = "Assets/PolygonMilitary/Prefabs/Characters/SM_Chr_Soldier_Male_01.prefab";
         private const string FireBulletPrefabPath = "Assets/Art/Prefabs/Bullets/Line_Red Variant.prefab";
+        // Bullet.prefab is a tiny particle that renders empty: the blue line bullet looks the same in the shop
+        private const string DefaultBulletPrefabPath = "Assets/Art/Prefabs/Bullets/Line_Blue Variant.prefab";
+        private static readonly Vector3 SideView = new(0f, 90f, 0f);
+        private static readonly Vector3 FrontView = new(0f, 180f, 0f);
 
         private static readonly StringBuilder Log = new();
 
@@ -74,6 +78,7 @@ namespace JollyPanda.LastFlag.Shop.EditorTools
             SetupServices(scene, catalog);
             SetupUpgrades(scene);
             SetupLoadout(scene, catalog);
+            SetupPreviews(scene, catalog);
             SetupPopups(scene);
             SetupHomeButtons(scene);
             SetupCountdownButton(scene);
@@ -165,7 +170,6 @@ namespace JollyPanda.LastFlag.Shop.EditorTools
                 var so = new SerializedObject(skin);
                 so.FindProperty("id").stringValue = $"skin_{index}_default";
                 so.FindProperty("nameEnglish").stringValue = "Default";
-                so.FindProperty("namePersian").stringValue = "پیش‌فرض";
                 so.FindProperty("isDefault").boolValue = true;
                 so.FindProperty("gunId").intValue = gun.GunId;
                 so.ApplyModifiedPropertiesWithoutUndo();
@@ -454,6 +458,119 @@ namespace JollyPanda.LastFlag.Shop.EditorTools
             return EnsureVariant(model, id, animator, mount);
         }
 
+        // ================================================================== 3D previews (RawImage)
+
+        private static void SetupPreviews(Scene scene, ShopCatalog catalog)
+        {
+            var shop = FindInScene<ShopManager>(scene).FirstOrDefault();
+            var previewRenderer = FindInScene<ModelPreviewRenderer>(scene).FirstOrDefault();
+            if (previewRenderer == null && shop != null)
+                previewRenderer = shop.gameObject.AddComponent<ModelPreviewRenderer>();
+
+            var animationController = FindInScene<PlayerAnimationController>(scene).FirstOrDefault(a => a.gameObject.activeInHierarchy)
+                                      ?? FindInScene<PlayerAnimationController>(scene).FirstOrDefault();
+            if (previewRenderer != null && animationController != null)
+            {
+                var animator = new SerializedObject(animationController).FindProperty("animator").objectReferenceValue as Animator
+                               ?? animationController.GetComponent<Animator>();
+                var rSo = new SerializedObject(previewRenderer);
+                if (animator != null && rSo.FindProperty("characterController").objectReferenceValue == null)
+                    rSo.FindProperty("characterController").objectReferenceValue = animator.runtimeAnimatorController;
+                rSo.ApplyModifiedPropertiesWithoutUndo();
+            }
+
+            var variants = FindInScene<CharacterVariant>(scene).ToList();
+            var guns = FindInScene<Gun>(scene).ToList();
+            var defaultBullet = AssetDatabase.LoadAssetAtPath<GameObject>(DefaultBulletPrefabPath);
+
+            foreach (var item in catalog.Items)
+            {
+                if (item == null || item.PreviewModel != null)
+                    continue;
+
+                GameObject model = null;
+                Vector3 rotation = Vector3.zero;
+                switch (item)
+                {
+                    case CharacterItemData character:
+                        var variant = variants.FirstOrDefault(v => v.VariantId == character.VariantId);
+                        model = variant != null ? AssetRoot(variant.gameObject) : null;
+                        rotation = FrontView;
+                        break;
+                    case GunItemData gunItem:
+                        model = GunModel(guns, gunItem.GunId);
+                        rotation = SideView;
+                        break;
+                    case GunSkinItemData skin:
+                        model = GunModel(guns, skin.GunId);
+                        rotation = SideView;
+                        break;
+                    case BulletItemData bullet:
+                        model = bullet.BulletPrefab != null ? bullet.BulletPrefab.gameObject : defaultBullet;
+                        rotation = SideView;
+                        break;
+                }
+
+                if (model == null)
+                    continue;
+
+                var so = new SerializedObject(item);
+                so.FindProperty("previewModel").objectReferenceValue = model;
+                so.FindProperty("previewRotation").vector3Value = rotation;
+                so.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(item);
+                Note($"{item.name}: preview model = {model.name}");
+            }
+        }
+
+        private static GameObject GunModel(List<Gun> guns, int gunId)
+        {
+            var gun = guns.FirstOrDefault(g => g.Id == gunId);
+            return gun != null ? AssetRoot(gun.gameObject) : null;
+        }
+
+        /// <summary>The prefab asset a scene object comes from (walking up nested prefabs to the first asset it is the root of).</summary>
+        private static GameObject AssetRoot(GameObject sceneObject)
+        {
+            var source = PrefabUtility.GetCorrespondingObjectFromSource(sceneObject);
+            while (source != null && source.transform.parent != null)
+                source = PrefabUtility.GetCorrespondingObjectFromSource(source);
+            return source;
+        }
+
+        /// <summary>Cards made before the 3D previews existed get their RawImage here.</summary>
+        private static void EnsureCardPreview(string prefabPath)
+        {
+            var root = PrefabUtility.LoadPrefabContents(prefabPath);
+            try
+            {
+                var view = root.GetComponent<ShopItemView>();
+                if (view == null)
+                    return;
+
+                var so = new SerializedObject(view);
+                var prop = so.FindProperty("previewImage");
+                if (prop == null || prop.objectReferenceValue != null)
+                    return;
+
+                var icon = so.FindProperty("iconImage").objectReferenceValue as Image;
+                var preview = NewUi("Preview", root.transform).gameObject.AddComponent<RawImage>();
+                preview.raycastTarget = false;
+                Stretch(preview.rectTransform, new Vector2(0.08f, 0.45f), new Vector2(0.92f, 0.95f));
+                if (icon != null)
+                    preview.rectTransform.SetSiblingIndex(icon.rectTransform.GetSiblingIndex() + 1);
+
+                prop.objectReferenceValue = preview;
+                so.ApplyModifiedPropertiesWithoutUndo();
+                PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
+                Note("Card prefab: RawImage preview added");
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(root);
+            }
+        }
+
         // ================================================================== popups (S04)
 
         private class Style
@@ -715,7 +832,10 @@ namespace JollyPanda.LastFlag.Shop.EditorTools
         {
             var existing = AssetDatabase.LoadAssetAtPath<GameObject>(CardPrefabPath);
             if (existing != null)
-                return existing.GetComponent<ShopItemView>();
+            {
+                EnsureCardPreview(CardPrefabPath);
+                return AssetDatabase.LoadAssetAtPath<GameObject>(CardPrefabPath).GetComponent<ShopItemView>();
+            }
 
             var root = NewUi("ShopItemCard", null);
             root.sizeDelta = new Vector2(440, 560);
@@ -726,6 +846,10 @@ namespace JollyPanda.LastFlag.Shop.EditorTools
             icon.preserveAspect = true;
             icon.raycastTarget = false;
             Stretch(icon.rectTransform, new Vector2(0.15f, 0.45f), new Vector2(0.85f, 0.9f));
+
+            var preview = NewUi("Preview", root).gameObject.AddComponent<RawImage>();
+            preview.raycastTarget = false;
+            Stretch(preview.rectTransform, new Vector2(0.08f, 0.45f), new Vector2(0.92f, 0.95f));
 
             var nameText = NewText("Name", root, style, 36, TextAlignmentOptions.Center);
             Stretch(nameText.rectTransform, new Vector2(0.05f, 0.34f), new Vector2(0.95f, 0.45f));
@@ -759,6 +883,7 @@ namespace JollyPanda.LastFlag.Shop.EditorTools
             var view = root.gameObject.AddComponent<ShopItemView>();
             var so = new SerializedObject(view);
             so.FindProperty("iconImage").objectReferenceValue = icon;
+            so.FindProperty("previewImage").objectReferenceValue = preview;
             so.FindProperty("nameText").objectReferenceValue = nameText;
             so.FindProperty("amountText").objectReferenceValue = amount;
             so.FindProperty("priceRoot").objectReferenceValue = priceRoot.gameObject;

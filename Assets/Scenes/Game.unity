@@ -1809,6 +1809,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::JollyPanda.LastFlag.PlayerModule.GunSkinTarget
   renderers: []
   materialSlot: 0
+--- !u!114 &495111029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151608741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7b81feee9bc2c04d85476b35ef2138c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MJUtilities.UI.ModelPreviewRenderer
+  characterController: {fileID: 9100000, guid: fbb869f23fda91a4981f69ab7f5984b8, type: 2}
+  resolution: 256
+  background: {r: 0, g: 0, b: 0, a: 0}
+  viewDirection: {x: 0.35, y: 0.2, z: 1}
+  padding: 1.1
+  fieldOfView: 30
 --- !u!1 &523920279 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3335935612599159453, guid: f60a03f207fe5d34fa06ce65fb333ba2, type: 3}
@@ -7687,6 +7705,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2353330853315056188, guid: 80fb5799ecf6a084faa18e393d4bd0f4, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1151608747}
+    - targetCorrespondingSourceObject: {fileID: 2353330853315056188, guid: 80fb5799ecf6a084faa18e393d4bd0f4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 495111029}
     - targetCorrespondingSourceObject: {fileID: 6631146105264973701, guid: 80fb5799ecf6a084faa18e393d4bd0f4, type: 3}
       insertIndex: -1
       addedObject: {fileID: 697556893689778964}

@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::JollyPanda.LastFlag.Shop.BulletItemData
   id: bullet_default
   nameEnglish: Default
-  namePersian: "\u067E\u06CC\u0634\u200C\u0641\u0631\u0636"
   icon: {fileID: 0}
   price: 0
   isDefault: 1
   sortOrder: 0
+  previewModel: {fileID: 6026851736399854261, guid: 86d777c9e260e4c4ba696ed54c54438b, type: 3}
+  previewRotation: {x: 0, y: 90, z: 0}
   bulletPrefab: {fileID: 0}

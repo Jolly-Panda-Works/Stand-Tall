@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::JollyPanda.LastFlag.Shop.BulletItemData
   id: bullet_fire
   nameEnglish: Fire Bullet
-  namePersian: "\u06AF\u0644\u0648\u0644\u0647\u0654 \u0622\u062A\u0634\u06CC\u0646"
   icon: {fileID: 0}
   price: 250
   isDefault: 0
   sortOrder: 1
+  previewModel: {fileID: 2057528340205586813, guid: 8e16ee6b0c230924b8c59aa6f74116c1, type: 3}
+  previewRotation: {x: 0, y: 90, z: 0}
   bulletPrefab: {fileID: 2717713774903072842, guid: 8e16ee6b0c230924b8c59aa6f74116c1, type: 3}

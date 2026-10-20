@@ -23,6 +23,8 @@ namespace MJUtilities.UI
     {
         [Header("Content")]
         [SerializeField] private Image iconImage;
+        [Tooltip("Shows the item's 3D model (ShopItemData.PreviewModel). The icon is used when there is no model.")]
+        [SerializeField] private RawImage previewImage;
         [SerializeField] private TMP_Text nameText;
         [Tooltip("Coin packs only: shows '+1,000'.")]
         [SerializeField] private TMP_Text amountText;
@@ -64,10 +66,20 @@ namespace MJUtilities.UI
             mode = viewMode;
             onClick = clickCallback;
 
+            var preview = previewImage != null && item.PreviewModel != null
+                ? ModelPreviewRenderer.Instance.GetPreview(item)
+                : null;
+
+            if (previewImage != null)
+            {
+                previewImage.texture = preview;
+                previewImage.enabled = preview != null;
+            }
+
             if (iconImage != null)
             {
                 iconImage.sprite = item.Icon;
-                iconImage.enabled = item.Icon != null;
+                iconImage.enabled = preview == null && item.Icon != null;
             }
 
             if (amountText != null)

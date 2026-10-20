@@ -14,10 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::JollyPanda.LastFlag.Shop.GunSkinItemData
   id: skin_0_gold
   nameEnglish: Gold
-  namePersian: "\u0637\u0644\u0627\u06CC\u06CC"
   icon: {fileID: 0}
   price: 150
   isDefault: 0
   sortOrder: 1
+  previewModel: {fileID: 7472718671032965515, guid: 36013cd36f493794786dd4550fb027c6, type: 3}
+  previewRotation: {x: 0, y: 90, z: 0}
   gunId: 1
   material: {fileID: 2100000, guid: 4c72148b3571175478fcfefd02aab733, type: 2}

@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::JollyPanda.LastFlag.Shop.GunItemData
   id: gun_1
   nameEnglish: Gun 2
-  namePersian: "\u0627\u0633\u0644\u062D\u0647 \u06F2"
   icon: {fileID: 0}
   price: 400
   isDefault: 0
   sortOrder: 1
+  previewModel: {fileID: 7472718671032965515, guid: 415eba7a3d940de48af51e9e5da0efaa, type: 3}
+  previewRotation: {x: 0, y: 90, z: 0}
   gunId: 2

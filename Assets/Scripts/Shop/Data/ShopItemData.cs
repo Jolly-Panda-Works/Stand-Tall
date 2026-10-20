@@ -22,7 +22,6 @@ namespace JollyPanda.LastFlag.Shop
         [Tooltip("Unique and permanent. Auto-filled from the asset name when empty.")]
         [SerializeField] private string id;
         [SerializeField] private string nameEnglish;
-        [SerializeField] private string namePersian;
         [SerializeField] private Sprite icon;
 
         [Header("Shop")]
@@ -33,12 +32,19 @@ namespace JollyPanda.LastFlag.Shop
         [Tooltip("Lower comes first inside a tab.")]
         [SerializeField] private int sortOrder;
 
+        [Header("3D Preview (optional)")]
+        [Tooltip("Model shown on the shop/customize card through a RawImage. Empty = the Icon sprite is used.")]
+        [SerializeField] private GameObject previewModel;
+        [Tooltip("Rotation of the model in front of the preview camera (the camera looks at its +Z side).")]
+        [SerializeField] private Vector3 previewRotation;
+
         public abstract ShopCategory Category { get; }
 
         public string Id => id;
         public string NameEnglish => nameEnglish;
-        public string NamePersian => namePersian;
         public Sprite Icon => icon;
+        public GameObject PreviewModel => previewModel;
+        public Vector3 PreviewRotation => previewRotation;
         public int Price => price;
         public int SortOrder => sortOrder;
         public bool IsDefault => isDefault && Category != ShopCategory.CoinPack;
